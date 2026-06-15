@@ -1,0 +1,41 @@
+<# Undefined variable :#>
+<p>Email: {{ email }}</p>
+<p>Tele: {{ telephone }}</p>
+{{ name > age }}
+
+
+<# Defined variable : #>
+<p>Welcome back, {{ name }}</p>
+<p>Your age is: {{ age }}</p>
+<p>Discount: {{ price }}</p>
+{% set var = 10 %}
+<p> {{ var }} </p>
+
+
+{% if True %}
+    {% set guest_status = "Allowed" %}
+{% endif %}
+
+<p>User status is: {{ guest_status }}</p>
+
+{% for user in users %}
+    {% set inside_var = "Hello Khaled" %}
+{% endfor %}
+
+    {{ inside_var }}
+
+{% set str = "khaled" %}
+{% set str2 = "taim" %}
+{{ str - str2 }}
+
+{% set x = 5 %}
+{% set y = "khaled" %}
+{{ x + y }}
+{{ x - y }}
+{{ x * y }}
+{{ x / y }}
+
+
+
+
+
