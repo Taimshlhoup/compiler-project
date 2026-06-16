@@ -315,7 +315,14 @@ private void checkVariable(String varName, int line) {
                 "' in Jinja template at line " + line);
     }
 }
-
+    private String inferLiteralType(String text) {
+        if (text.startsWith("\"") || text.startsWith("'")) return "String";
+        if (text.matches("[0-9]+"))                         return "Integer";
+        if (text.matches("[0-9]*\\.[0-9]+"))                return "Float";
+        if (text.equalsIgnoreCase("true") ||
+                text.equalsIgnoreCase("false"))                 return "Boolean";
+        return null;
+    }
     private Object visitArithmetic(String left, String right, String op, int line) {
         JinjaArithmeticExpression expr = new JinjaArithmeticExpression(line);
         expr.setLeft(left);
@@ -329,8 +336,8 @@ private void checkVariable(String varName, int line) {
         // فحص الأنواع
         SymbolEntry leftEntry  = SymbolTableManager.INSTANCE.lookup(left,  "jinja");
         SymbolEntry rightEntry = SymbolTableManager.INSTANCE.lookup(right, "jinja");
-        String leftType  = (leftEntry  != null) ? (String) leftEntry.getAttribute("Type") : null;
-        String rightType = (rightEntry != null) ? (String) rightEntry.getAttribute("Type") : null;
+        String leftType  = (leftEntry  != null) ? (String) leftEntry.getAttribute("Type") : inferLiteralType(left);
+        String rightType = (rightEntry != null) ? (String) rightEntry.getAttribute("Type") : inferLiteralType(right);
 
         if (leftType != null && rightType != null) {
             if (!leftType.equals(rightType)) {

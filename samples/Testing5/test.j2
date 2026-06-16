@@ -1,4 +1,16 @@
-{% set x = 10 %}
+{{ email }}
+{{ age }}
+{% set str = "hello" - 2 %}
+{% set str1 = "hello" %}
+{% set str2 = 2 %}
+{{ str1 - str2 }}
+{% set x = 5 + "world" %}
+{% for item in items %}
+    {% set inside_var = 10 %}
+{% endfor %}
+{{ inside_var }}
+{{ bye() }}
+{% set a = 10 / 0 %}
 {% set y = 0 %}
-{{ x / y }}
-{{ x / 0 }}
+{% set b = 10 / y %}
+{{ username }}
