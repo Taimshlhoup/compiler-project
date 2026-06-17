@@ -234,6 +234,7 @@
 //}
 package app;
 
+
 import antlr.html.HtmlLexer;
 import antlr.html.HtmlParser;
 import antlr.python.PythonLexer;
@@ -249,108 +250,232 @@ import visitor.python.ProgramVisitor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class App {
+
+    private static JTabbedPane tabbedPane = new JTabbedPane();
+    private static JFrame mainFrame = null;
     public static void main(String[] args) {
+
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                mainFrame = new JFrame("🌳 AST Viewer");
+                mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                mainFrame.setSize(1000, 700);
+                mainFrame.setLocationRelativeTo(null);
+
+                tabbedPane.setBackground(new Color(45, 45, 48));
+                tabbedPane.setForeground(Color.WHITE);
+                tabbedPane.setFont(new Font("Arial", Font.BOLD, 13));
+
+                mainFrame.add(tabbedPane);
+                mainFrame.setVisible(true);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         processFile("samples/Testing2/app.py");
         processFile("samples/Testing2/test-errors.j2");
     }
 
-    private static void processFile(String fileName) {
-        try {
-            // 1. معالجة ملفات Python
-            if (fileName.endsWith(".py")) {
-                System.out.println("\n--- [Python Analysis] Processing: " + fileName + " ---");
+private static void processFile(String fileName) {
+    try {
+        if (fileName.endsWith(".py")) {
+            System.out.println("\n--- [Python Analysis] Processing: " + fileName + " ---");
 
-                PythonLexer lexer = new PythonLexer(CharStreams.fromFileName(fileName));
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                PythonParser parser = new PythonParser(tokens);
+            PythonLexer lexer = new PythonLexer(CharStreams.fromFileName(fileName));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            PythonParser parser = new PythonParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(new CustomErrorListener());
 
-                parser.removeErrorListeners();
-                parser.addErrorListener(new CustomErrorListener());
+            ParseTree tree = parser.prog();
+            ProgramVisitor visitor = new ProgramVisitor();
+            ast.Program program = (ast.Program) visitor.visit(tree);
 
-                ParseTree tree = parser.prog();
+            System.out.println("\n--- Symbol Table after Python ---");
+            System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
 
-                ProgramVisitor visitor = new ProgramVisitor();
-                ast.Program program = (ast.Program) visitor.visit(tree);
 
-                //  طباعة الـ AST الخاصة ببايثون
-                System.out.println("\n--- AST ---");
-                if (program != null) {
-                    System.out.println(program.toString());
-                }
-
-                // طباعة جدول رموز بايثون
-                System.out.println("\n--- Symbol Table after Python ---");
-                System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
+            if (program != null) {
+                showASTWindow(program.toString(), " Python AST - " + fileName);
             }
-            // 2. معالجة ملفات HTML و Jinja
-            else if (fileName.endsWith(".html") || fileName.endsWith(".j2") || fileName.endsWith(".jinja")) {
-                System.out.println("\n--- [Jinja/HTML Analysis] Processing: " + fileName + " ---");
 
-                HtmlLexer lexer = new HtmlLexer(CharStreams.fromFileName(fileName));
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                HtmlParser parser = new HtmlParser(tokens);
+        } else if (fileName.endsWith(".html") || fileName.endsWith(".j2") || fileName.endsWith(".jinja")) {
+            System.out.println("\n--- [Jinja/HTML Analysis] Processing: " + fileName + " ---");
 
-                parser.removeErrorListeners();
-                parser.addErrorListener(new CustomErrorListener());
+            HtmlLexer lexer = new HtmlLexer(CharStreams.fromFileName(fileName));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            HtmlParser parser = new HtmlParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(new CustomErrorListener());
 
-                ParseTree tree = parser.html_content();
+            ParseTree tree = parser.html_content();
+            visitor.html.HtmlContentVisitor visitor = new visitor.html.HtmlContentVisitor();
+            ast.HtmlContent htmlContent = (ast.HtmlContent) visitor.visit(tree);
 
-                visitor.html.HtmlContentVisitor visitor = new visitor.html.HtmlContentVisitor();
-                ast.HtmlContent htmlContent = (ast.HtmlContent) visitor.visit(tree);
+            System.out.println("\n--- Python Symbol Table (Flask Context) ---");
+            System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
 
-                //  طباعة الـ AST الخاصة بجينجا
-                System.out.println("\n--- AST ---");
-                if (htmlContent != null) {
-                    System.out.println(htmlContent.toString());
-                }
+            System.out.println("\n--- Jinja Symbol Table ---");
+            System.out.println(symbolTable.SymbolTableManager.INSTANCE.getJinjaTable());
 
-                //   طباعة جدول رموز Python (الخاص بفلاسك) ليكون مرجعاً لك أثناء فحص جينجا
-                System.out.println("\n--- Python Symbol Table (Flask Context) ---");
-                if (symbolTable.SymbolTableManager.INSTANCE.getPythonTable() != null) {
-                    System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
+            if (htmlContent != null) {
+                showASTWindow(htmlContent.toString(), " Jinja/HTML AST - " + fileName);
+            }
+
+        } else if (fileName.endsWith(".css")) {
+            System.out.println("\n--- [CSS Analysis] Processing: " + fileName + " ---");
+
+            antlr.css.CssLexer lexer = new antlr.css.CssLexer(CharStreams.fromFileName(fileName));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            antlr.css.CssParser parser = new antlr.css.CssParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(new CustomErrorListener());
+
+            ParseTree tree = parser.style_sheet();
+            visitor.css.StyleSheetVisitor cssVisitor = new visitor.css.StyleSheetVisitor();
+            cssVisitor.visit(tree);
+
+        } else {
+            System.out.println("Skipping file: " + fileName);
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error processing " + fileName + ": " +
+                (e.getMessage() != null ? e.getMessage() : "Unknown Error"));
+        e.printStackTrace();
+    }
+}
+
+
+private static void showASTWindow(String astText, String tabTitle) {
+    SwingUtilities.invokeLater(() -> {
+
+        DefaultMutableTreeNode root = buildTreeFromText(astText);
+        JTree tree = new JTree(new DefaultTreeModel(root));
+        tree.setBackground(new Color(30, 30, 30));
+        tree.setForeground(new Color(212, 212, 212));
+        tree.setFont(new Font("JetBrains Mono", Font.PLAIN, 13));
+        tree.setRowHeight(24);
+        tree.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        tree.setCellRenderer(new javax.swing.tree.DefaultTreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value,
+                                                          boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+                String text = value.toString();
+                setBackgroundNonSelectionColor(new Color(30, 30, 30));
+                setBackgroundSelectionColor(new Color(0, 122, 204));
+
+                if (text.contains("Statement") || text.contains("Stmt")) {
+                    setForeground(sel ? Color.WHITE : new Color(86, 156, 214));
+                } else if (text.contains("Expression") || text.contains("Expr")) {
+                    setForeground(sel ? Color.WHITE : new Color(78, 201, 176));
+                } else if (text.contains("Content") || text.contains("Html")) {
+                    setForeground(sel ? Color.WHITE : new Color(206, 145, 120));
+                } else if (text.contains("=") || text.contains("in ")) {
+                    setForeground(sel ? Color.WHITE : new Color(220, 220, 170));
                 } else {
-                    System.out.println("Python Symbol Table is empty or null!");
+                    setForeground(sel ? Color.WHITE : new Color(212, 212, 212));
                 }
-
-                //   طباعة جدول رموز Jinja
-                System.out.println("\n--- Jinja Symbol Table ---");
-                if (symbolTable.SymbolTableManager.INSTANCE.getJinjaTable() != null) {
-                    System.out.println(symbolTable.SymbolTableManager.INSTANCE.getJinjaTable());
-                } else {
-                    System.out.println("Jinja Symbol Table is empty or null!");
-                }
+                setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+                return this;
             }
-            //  معالجة ملفات CSS
-            else if (fileName.endsWith(".css")) {
-                System.out.println("\n--- [CSS Analysis] Processing: " + fileName + " ---");
+        });
 
-                antlr.css.CssLexer lexer = new antlr.css.CssLexer(CharStreams.fromFileName(fileName));
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                antlr.css.CssParser parser = new antlr.css.CssParser(tokens);
+        expandAll(tree);
 
-                parser.removeErrorListeners();
-                parser.addErrorListener(new CustomErrorListener());
+        JScrollPane scrollPane = new JScrollPane(tree);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(new Color(30, 30, 30));
 
-                ParseTree tree = parser.style_sheet();
+        // ===== Bottom Buttons =====
+        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomBar.setBackground(new Color(45, 45, 48));
 
-                visitor.css.StyleSheetVisitor cssVisitor = new visitor.css.StyleSheetVisitor();
-                cssVisitor.visit(tree);
+        JButton expandBtn  = new JButton("Expand All");
+        JButton collapseBtn = new JButton("Collapse All");
+
+        for (JButton btn : new JButton[]{expandBtn, collapseBtn}) {
+            btn.setBackground(new Color(0, 122, 204));
+            btn.setForeground(Color.WHITE);
+            btn.setFocusPainted(false);
+            btn.setBorderPainted(false);
+            btn.setFont(new Font("Arial", Font.PLAIN, 13));
+            bottomBar.add(btn);
+        }
+
+        expandBtn.addActionListener(e -> expandAll(tree));
+        collapseBtn.addActionListener(e -> collapseAll(tree));
+
+        // ===== Panel للـ Tab =====
+        JPanel tabPanel = new JPanel(new BorderLayout());
+        tabPanel.setBackground(new Color(30, 30, 30));
+        tabPanel.add(scrollPane, BorderLayout.CENTER);
+        tabPanel.add(bottomBar, BorderLayout.SOUTH);
+
+
+        tabbedPane.addTab(tabTitle, tabPanel);
+        tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+    });
+}
+
+    private static DefaultMutableTreeNode buildTreeFromText(String astText) {
+        String[] lines = astText.split("\n");
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("AST");
+        java.util.Stack<DefaultMutableTreeNode> stack = new java.util.Stack<>();
+        stack.push(root);
+        java.util.Stack<Integer> levels = new java.util.Stack<>();
+        levels.push(-1);
+
+        for (String line : lines) {
+            if (line.trim().isEmpty()) continue;
+            int level = getIndentLevel(line);
+            String nodeText = line.replaceAll("^[\\s|]+", "").trim();
+            if (nodeText.isEmpty()) continue;
+
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(nodeText);
+
+            while (levels.size() > 1 && levels.peek() >= level) {
+                stack.pop();
+                levels.pop();
             }
-            else {
-                System.out.println("Skipping file (Unsupported Extension): " + fileName);
-            }
 
-        } catch (Exception e) {
-            System.err.println("Error processing " + fileName + ": " +
-                    (e.getMessage() != null ? e.getMessage() : "Unknown Error"));
+            stack.peek().add(node);
+            stack.push(node);
+            levels.push(level);
+        }
+        return root;
+    }
+
+    private static int getIndentLevel(String line) {
+        int count = 0;
+        for (char c : line.toCharArray()) {
+            if (c == '|' || c == ' ') count++;
+            else break;
+        }
+        return count / 4;
+    }
+
+    private static void expandAll(JTree tree) {
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
+    }
+
+    private static void collapseAll(JTree tree) {
+        for (int i = tree.getRowCount() - 1; i >= 1; i--) {
+            tree.collapseRow(i);
         }
     }
 

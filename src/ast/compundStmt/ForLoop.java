@@ -26,19 +26,20 @@ public class ForLoop extends CompoundStatement {
         this.condition = condition;
     }
 
+
     @Override
     public String symbolTablePrint() {
-        return "for " +
-                var.toString() + " in " +
-                iter.symbolTablePrint() + (condition == null ? ""
-                : " if " + condition.symbolTablePrint());
-    }
+             return "for " +
+            (var != null ? var.toString() : "null") + " in " +
+            (iter != null ? iter.symbolTablePrint() : "null") +
+            (condition == null ? "" : " if " + condition.symbolTablePrint());
+}
 
     @Override
     public String toString() {
         return super.toString() +
-                " ( " + var.toString() + " in " +
-                iter.toString() + (condition == null ? ""
-                : condition.toString()) + " ) ";
+                " ( " + (var != null ? var.toString() : "null") + " in " +
+                (iter != null ? iter.toString() : "null") +
+                (condition == null ? "" : condition.toString()) + " ) ";
     }
 }
