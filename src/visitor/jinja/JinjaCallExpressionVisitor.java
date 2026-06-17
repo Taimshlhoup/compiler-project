@@ -77,16 +77,21 @@ import ast.jinja.JinjaArgumentsList;
 
 public class JinjaCallExpressionVisitor extends HtmlParserBaseVisitor<Object> {
 
-    // تعريف الـ Visitor التالي في السلسلة (المحطة الأخيرة)
+
     private final JinjaAtomVisitor atomVisitor = new JinjaAtomVisitor();
 
-    @Override
-    public Object visitJinjaAtomOnly(HtmlParser.JinjaAtomOnlyContext ctx) {
-       // System.out.println("DEBUG: Inside JinjaCallExpressionVisitor -> visitJinjaAtomOnly");
+@Override
+public Object visitJinjaAtomOnly(HtmlParser.JinjaAtomOnlyContext ctx) {
+    Object atomResult = atomVisitor.visit(ctx.j_atom());
 
-        // الربط اليدوي لضمان الوصول لـ JinjaAtomVisitor حيث يتم فحص الجدول
-        return atomVisitor.visit(ctx.j_atom());
+
+    if (atomResult instanceof ast.atom.Atom) {
+        return new JinjaAtom(ctx.getStart().getLine(), (ast.atom.Atom) atomResult);
     }
+
+
+    return atomResult;
+}
 
     @Override
     public Object visitJinjaFunctionCall(HtmlParser.JinjaFunctionCallContext ctx) {
@@ -117,7 +122,7 @@ public class JinjaCallExpressionVisitor extends HtmlParserBaseVisitor<Object> {
         return visit(ctx.j_var_access());
     }
 
-    // ✅ إضافة جديدة
+
     @Override
     public Object visitJinjaVarAccessOnlyDef(HtmlParser.JinjaVarAccessOnlyDefContext ctx) {
         JinjaVariableAccess access = new JinjaVariableAccess(ctx.getStart().getLine());
@@ -129,7 +134,6 @@ public class JinjaCallExpressionVisitor extends HtmlParserBaseVisitor<Object> {
         return access;
     }
 
-    // ✅ إضافة جديدة لـ filtered expressions (مثل items|length)
     @Override
     public Object visitJinjaFilteredExpr(HtmlParser.JinjaFilteredExprContext ctx) {
         return visit(ctx.j_var_access());

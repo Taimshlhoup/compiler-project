@@ -258,8 +258,8 @@ import java.util.stream.Stream;
 
 public class App {
     public static void main(String[] args) {
-        processFile("samples/Testing5/app.py");
-        processFile("samples/Testing5/test.j2");
+        processFile("samples/Testing2/app.py");
+        processFile("samples/Testing2/test-errors.j2");
     }
 
     private static void processFile(String fileName) {
@@ -280,7 +280,7 @@ public class App {
                 ProgramVisitor visitor = new ProgramVisitor();
                 ast.Program program = (ast.Program) visitor.visit(tree);
 
-                // ✅ طباعة الـ AST الخاصة ببايثون
+                //  طباعة الـ AST الخاصة ببايثون
                 System.out.println("\n--- AST ---");
                 if (program != null) {
                     System.out.println(program.toString());
@@ -306,13 +306,13 @@ public class App {
                 visitor.html.HtmlContentVisitor visitor = new visitor.html.HtmlContentVisitor();
                 ast.HtmlContent htmlContent = (ast.HtmlContent) visitor.visit(tree);
 
-                // ✅ طباعة الـ AST الخاصة بجينجا
+                //  طباعة الـ AST الخاصة بجينجا
                 System.out.println("\n--- AST ---");
                 if (htmlContent != null) {
                     System.out.println(htmlContent.toString());
                 }
 
-                // 🔥 أولاً: طباعة جدول رموز Python (الخاص بفلاسك) ليكون مرجعاً لك أثناء فحص جينجا
+                //   طباعة جدول رموز Python (الخاص بفلاسك) ليكون مرجعاً لك أثناء فحص جينجا
                 System.out.println("\n--- Python Symbol Table (Flask Context) ---");
                 if (symbolTable.SymbolTableManager.INSTANCE.getPythonTable() != null) {
                     System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
@@ -320,7 +320,7 @@ public class App {
                     System.out.println("Python Symbol Table is empty or null!");
                 }
 
-                // 🔥 ثانياً: طباعة جدول رموز Jinja
+                //   طباعة جدول رموز Jinja
                 System.out.println("\n--- Jinja Symbol Table ---");
                 if (symbolTable.SymbolTableManager.INSTANCE.getJinjaTable() != null) {
                     System.out.println(symbolTable.SymbolTableManager.INSTANCE.getJinjaTable());
@@ -328,7 +328,7 @@ public class App {
                     System.out.println("Jinja Symbol Table is empty or null!");
                 }
             }
-            // 3. معالجة ملفات CSS
+            //  معالجة ملفات CSS
             else if (fileName.endsWith(".css")) {
                 System.out.println("\n--- [CSS Analysis] Processing: " + fileName + " ---");
 
