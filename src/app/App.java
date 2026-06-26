@@ -267,7 +267,7 @@ public class App {
 
         try {
             SwingUtilities.invokeAndWait(() -> {
-                mainFrame = new JFrame("🌳 AST Viewer");
+                mainFrame = new JFrame("AST Viewer");
                 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 mainFrame.setSize(1000, 700);
                 mainFrame.setLocationRelativeTo(null);
@@ -282,8 +282,8 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        processFile("samples/Testing2/app.py");
-        processFile("samples/Testing2/test-errors.j2");
+        processFile("samples/Testing/errors-test.py");
+        processFile("samples/Testing/Jinja-test.j2");
     }
 
 private static void processFile(String fileName) {

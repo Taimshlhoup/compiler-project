@@ -76,64 +76,134 @@ public static class FunctionMetadata {
 }
     public static final java.util.Map<String, FunctionMetadata> functionRegistry = new java.util.HashMap<>();
 
-    @Override
-    public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
-        FunctionCall functionCall = new FunctionCall(ctx.getStart().getLine());
-        String funcName = ctx.NAME().getText();
-        functionCall.setVarName(funcName);
+//    @Override
+//    public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
+//        FunctionCall functionCall = new FunctionCall(ctx.getStart().getLine());
+//        String funcName = ctx.NAME().getText();
+//        functionCall.setVarName(funcName);
+//
+//        List<String> builtins = List.of(
+//                "print", "len", "range", "int", "str", "float",
+//                "render_template", "redirect", "url_for", "append"
+//        );
+//        if (!builtins.contains(funcName) && !functionRegistry.containsKey(funcName)) {
+//            System.err.println("Semantic Error: Undefined function '" + funcName +
+//                    "' at line " + ctx.getStart().getLine());
+//        }
+//        ArgumentsList argumentsList = null;
+//        if (ctx.arglist() != null) {
+//            argumentsList = new ArgumentListVisitor().visit(ctx.arglist());
+//            functionCall.setArgumentsList(argumentsList);
+//        }
+@Override
+public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
+    FunctionCall functionCall = new FunctionCall(ctx.getStart().getLine());
+    String funcName = ctx.NAME().getText();
+    functionCall.setVarName(funcName);
 
-        List<String> builtins = List.of(
-                "print", "len", "range", "int", "str", "float",
-                "render_template", "redirect", "url_for", "append"
-        );
-        if (!builtins.contains(funcName) && !functionRegistry.containsKey(funcName)) {
-            System.err.println("Semantic Error: Undefined function '" + funcName +
-                    "' at line " + ctx.getStart().getLine());
-        }
-        ArgumentsList argumentsList = null;
-        if (ctx.arglist() != null) {
-            argumentsList = new ArgumentListVisitor().visit(ctx.arglist());
-            functionCall.setArgumentsList(argumentsList);
-        }
+    // ✅ افحص render_template قبل زيارة الـ arglist
+    if ("render_template".equals(funcName) && ctx.arglist() != null) {
+        symbolTable.SymbolTable currentScope =
+                SymbolTableManager.INSTANCE.getPythonTable();
 
+        String[] args = ctx.arglist().getText().split(",");
+        for (String arg : args) {
+            if (arg.contains("=")) {
+                String[] parts = arg.split("=", 2);
+                String valueVar = parts[1].trim()
+                        .replaceAll("[^a-zA-Z0-9_]", "");
+
+                if (!valueVar.isEmpty()
+                        && !valueVar.matches("[0-9]+.*")
+                        && !valueVar.startsWith("'")
+                        && !valueVar.equalsIgnoreCase("true")
+                        && !valueVar.equalsIgnoreCase("false")
+                        && !valueVar.equalsIgnoreCase("none")) {
+
+                    // ✅ الفحص قبل ما يُسجَّل
+                    if (currentScope != null &&
+                            currentScope.lookup(valueVar) == null) {
+                        System.err.println("Semantic Error: Undefined variable '" +
+                                valueVar + "' used in render_template() at line " +
+                                ctx.getStart().getLine());
+                    }
+                }
+            }
+        }
+    }
+
+    // بعدين زيارة الـ arglist
+    ArgumentsList argumentsList = null;
+    if (ctx.arglist() != null) {
+        argumentsList = new ArgumentListVisitor().visit(ctx.arglist());
+        functionCall.setArgumentsList(argumentsList);
+    }
+
+    // باقي الكود render_template...
+
+
+//        if ("render_template".equals(funcName)) {
+//            try {
+//
+//                pythonScopeAtRender = symbolTable.SymbolTableManager.INSTANCE.getPythonTable();
+//
+//                // نستخدم جدول الجينجا ليبقى ثابتاً ولا يحذف عند الخروج من دالة البايثون
+//                symbolTable.SymbolTable jinjaTable = symbolTable.SymbolTableManager.INSTANCE.getJinjaTable();
+//
+//                if (jinjaTable != null && ctx.arglist() != null) {
+//                    // جلب النص الكامل للأرغومنتات وتقسيمها بناءً على الفواصل
+//                    String[] args = ctx.arglist().getText().split(",");
+//                    for (String arg : args) {
+//                        if (arg.contains("=")) {
+//                            // استخراج اسم المتغير المكتوب قبل علامة الـ =
+//                            String flaskVar = arg.split("=")[0].trim();
+//                            flaskVar = flaskVar.replaceAll("[^a-zA-Z0-9_]", "");
+//
+//                            if (!flaskVar.isEmpty()) {
+//                                // ضخ المتغير الممرر فعلياً في جدول الجينجا الثابت
+//                                jinjaTable.insert(flaskVar);
+//                                jinjaTable.setAttribute(flaskVar, "Type", "Dynamic");
+//                            }
+//                        }
+//                    }
+//                }
+//            } catch (Exception e) {
+//                // حماية لضمان استمرار المفسر
+//            }
+//        }
 
         if ("render_template".equals(funcName)) {
             try {
+                pythonScopeAtRender = SymbolTableManager.INSTANCE.getPythonTable();
 
-                pythonScopeAtRender = symbolTable.SymbolTableManager.INSTANCE.getPythonTable();
-
-                // نستخدم جدول الجينجا ليبقى ثابتاً ولا يحذف عند الخروج من دالة البايثون
-                symbolTable.SymbolTable jinjaTable = symbolTable.SymbolTableManager.INSTANCE.getJinjaTable();
+                symbolTable.SymbolTable jinjaTable = SymbolTableManager.INSTANCE.getJinjaTable();
 
                 if (jinjaTable != null && ctx.arglist() != null) {
-                    // جلب النص الكامل للأرغومنتات وتقسيمها بناءً على الفواصل
+
+
                     String[] args = ctx.arglist().getText().split(",");
                     for (String arg : args) {
-                        if (arg.contains("=")) {
-                            // استخراج اسم المتغير المكتوب قبل علامة الـ =
-                            String flaskVar = arg.split("=")[0].trim();
-                            flaskVar = flaskVar.replaceAll("[^a-zA-Z0-9_]", "");
 
-                            if (!flaskVar.isEmpty()) {
-                                // ضخ المتغير الممرر فعلياً في جدول الجينجا الثابت
-                                jinjaTable.insert(flaskVar);
-                                jinjaTable.setAttribute(flaskVar, "Type", "Dynamic");
-                            }
+                        if (arg.contains("=")) {
+                            String[] parts = arg.split("=", 2);
+                            String flaskVar = parts[0].trim().replaceAll("[^a-zA-Z0-9_]", "");
+                            String valueVar = parts[1].trim().replaceAll("[^a-zA-Z0-9_]", "");
+
                         }
                     }
                 }
             } catch (Exception e) {
-                // حماية لضمان استمرار المفسر
+                e.printStackTrace();
             }
         }
 
-        // جلب بيانات الدالة من السجل (للدوال العادية المعرفة من قبل المستخدم في البايثون)
+
         FunctionMetadata funcData = functionRegistry.get(funcName);
 
         if (funcData != null) {
             List<String> paramNames = funcData.paramNames;
             PythonParser.StatementContext bodyCtx = funcData.bodyCtx;
-            // ✅ Wrong Number of Arguments check
+            //  Wrong Number of Arguments check
             int expectedArgs = paramNames.size();
             int actualArgs = 0;
             if (argumentsList instanceof ast.argsList.AtomArguments) {
@@ -148,19 +218,18 @@ public static class FunctionMetadata {
                         ". Expected " + expectedArgs + ", got " + actualArgs);
             }
 
-            // rest of existing code...
-            // 1️⃣ فتح السكوب المحلي للدالة (باستخدام المانجر)
+
             symbolTable.SymbolTableManager.INSTANCE.enterPythonLocalScope();
 
             try {
-                // 2️⃣ جلب الآرغومنتات وعمل كاستنج لنوع AtomArguments الصحيح بمشروعك
+
                 if (argumentsList instanceof ast.argsList.AtomArguments) {
                     List<ast.atom.Atom> args = ((ast.argsList.AtomArguments) argumentsList).getArgs();
 
                     if (args != null) {
                         for (int i = 0; i < paramNames.size() && i < args.size(); i++) {
                             String pName = paramNames.get(i);
-                            String argType = "Dynamic"; // النوع الافتراضي
+                            String argType = "Dynamic";
 
                             ast.atom.Atom argumentNode = args.get(i);
                             if (argumentNode != null) {
@@ -187,13 +256,13 @@ public static class FunctionMetadata {
                     }
                 }
 
-                // 4️⃣ زيارة فحص جسم الدالة سيمانتيكياً بالمتغيرات الجديدة
+
                 StatementVisitor statementVisitor = new StatementVisitor();
                 statementVisitor.visit(bodyCtx);
 
             }
             finally {
-                // 5️⃣ إغلاق السكوب المحلي فور الانتهاء للخروج للأب (هنا كان يختفي age و username)
+
                 // لكن لا تقلق، لقد قمنا بحفظ نسخة منه فوق في pythonScopeAtRender بنجاح!
                 symbolTable.SymbolTableManager.INSTANCE.exitPythonLocalScope();
             }

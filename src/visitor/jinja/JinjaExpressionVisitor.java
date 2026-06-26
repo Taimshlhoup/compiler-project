@@ -139,9 +139,8 @@ import visitor.python.AtomExpressionVisitor;
 
 public class JinjaExpressionVisitor extends HtmlParserBaseVisitor<Object> {
 
-    // تعريف الـ Visitor التالي في السلسلة كمتغير ثابت لتجنب التكرار
-    private final JinjaCallExpressionVisitor callVisitor = new JinjaCallExpressionVisitor();
 
+    private final JinjaCallExpressionVisitor callVisitor = new JinjaCallExpressionVisitor();
 
 
 @Override
@@ -150,7 +149,6 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
     if (fullText.contains("(")) {
         return buildSimpleExpr(ctx);
     }
-    // تخطى الـ literals
     if (fullText.matches("[0-9]+.*")       ||
             fullText.startsWith("\"")          ||
             fullText.startsWith("'")           ||
@@ -184,7 +182,7 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
                 "' in Jinja template at line " + ctx.getStart().getLine());
     }
 
-    // ✅ ارجع JinjaSimpleExpression صحيحة
+
     return buildSimpleExpr(ctx);
 }
 
@@ -196,7 +194,7 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
 
         Object callResult = callVisitor.visit(ctx.j_call_expr());
 
-        // ✅ قبل أي نوع يرجع من callVisitor
+
         if (callResult instanceof ast.jinja.jinjaExpression.JinjaExpression) {
             simpleExpr.setExpr((ast.jinja.jinjaExpression.JinjaExpression) callResult);
         }
@@ -239,58 +237,7 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
             }
         }
     }
-//    private Object visitArithmetic(String left, String right, String op, int line) {
-//        JinjaArithmeticExpression expr = new JinjaArithmeticExpression(line);
-//        expr.setLeft(left);
-//        expr.setOperator(op);
-//        expr.setRight(right);
-//
-//        // فحص semantic - العمليات الحسابية تحتاج Integer أو Float
-//        SymbolEntry leftEntry  = SymbolTableManager.INSTANCE.lookup(left,  "jinja");
-//        SymbolEntry rightEntry = SymbolTableManager.INSTANCE.lookup(right, "jinja");
-//
-//        String leftType  = (leftEntry  != null) ? (String) leftEntry.getAttribute("Type")  : null;
-//        String rightType = (rightEntry != null) ? (String) rightEntry.getAttribute("Type") : null;
-//
-//        if (leftType != null && rightType != null) {
-//            if (leftType.equals("String") || leftType.equals("Boolean") ||
-//                    rightType.equals("String") || rightType.equals("Boolean")) {
-//                System.err.println("Semantic Error: Type error at line " + line +
-//                        " -> Operator '" + op + "' is not supported for type '" +
-//                        (leftType.equals("String") || leftType.equals("Boolean")
-//                                ? leftType : rightType) + "'");
-//            }
-//        }
-//        return expr;
-//    }
-//private Object visitArithmetic(String left, String right, String op, int line) {
-//    JinjaArithmeticExpression expr = new JinjaArithmeticExpression(line);
-//    expr.setLeft(left);
-//    expr.setOperator(op);
-//    expr.setRight(right);
-//
-//    SymbolEntry leftEntry  = SymbolTableManager.INSTANCE.lookup(left,  "jinja");
-//    SymbolEntry rightEntry = SymbolTableManager.INSTANCE.lookup(right, "jinja");
-//
-//    String leftType  = (leftEntry  != null) ? (String) leftEntry.getAttribute("Type") : null;
-//    String rightType = (rightEntry != null) ? (String) rightEntry.getAttribute("Type") : null;
-//
-//    if (leftType != null && rightType != null) {
-//        // ✅ نوعين مختلفين → Type mismatch
-//        if (!leftType.equals(rightType)) {
-//            System.err.println("Semantic Error: Type mismatch at line " + line +
-//                    " -> Cannot perform '" + op + "' on '" + leftType + "' and '" + rightType + "'");
-//        }
-//        // ✅ نفس النوع لكن العملية غير مدعومة → Type error
-//        else if (leftType.equals("String") || leftType.equals("Boolean")) {
-//            System.err.println("Semantic Error: Type error at line " + line +
-//                    " -> Operator '" + op + "' is not supported for type '" + leftType + "'");
-//        }
-//    }
-//
-//    return expr;
-//}
-// دالة مساعدة لفحص المتغير
+
 private void checkVariable(String varName, int line) {
     // تخطى literals
     if (varName.matches("[0-9]+.*") || varName.startsWith("\"") ||
@@ -303,14 +250,14 @@ private void checkVariable(String varName, int line) {
     symbolTable.SymbolTable pythonTable = AtomExpressionVisitor.pythonScopeAtRender;
 
     if (jinjaTable != null && jinjaTable.lookup(varName) != null) {
-        // ✅ معرّف بـ set أو ممرر عبر render_template
+        //  معرّف بـ set أو ممرر عبر render_template
     } else if (pythonTable != null && pythonTable.lookup(varName) != null) {
-        // ⚠️ موجود في Python لكن ما انمرر
+        //  موجود في Python لكن ما انمرر
         System.err.println("Semantic Error: Missing flask variable '" + varName +
                 "' at line " + line +
                 " -> variable is defined in Python but not passed to render_template()");
     } else {
-        // ❌ غير موجود في أي مكان
+        //  غير موجود في أي مكان
         System.err.println("Semantic Error: Undefined variable '" + varName +
                 "' in Jinja template at line " + line);
     }
@@ -329,7 +276,7 @@ private void checkVariable(String varName, int line) {
         expr.setOperator(op);
         expr.setRight(right);
 
-        // ✅ فحص وجود المتغيرات
+
         checkVariable(left, line);
         checkVariable(right, line);
 
@@ -351,24 +298,6 @@ private void checkVariable(String varName, int line) {
         return expr;
     }
 
-//    @Override
-//    public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
-//        String leftVar  = ctx.j_call_expr(0).getText();
-//        String rightVar = ctx.j_call_expr(1).getText();
-//        String op = ctx.getChild(1).getText();
-//
-//        // ✅ فحص وجود المتغيرات
-//        checkVariable(leftVar,  ctx.getStart().getLine());
-//        checkVariable(rightVar, ctx.getStart().getLine());
-//
-//        SymbolEntry leftEntry  = SymbolTableManager.INSTANCE.lookup(leftVar,  "jinja");
-//        SymbolEntry rightEntry = SymbolTableManager.INSTANCE.lookup(rightVar, "jinja");
-//        String leftType  = (leftEntry  != null) ? (String) leftEntry.getAttribute("Type") : null;
-//        String rightType = (rightEntry != null) ? (String) rightEntry.getAttribute("Type") : null;
-//
-//        validateTypes(leftType, rightType, op, ctx.getStart().getLine());
-//        return super.visitJinjaBinaryExpr(ctx);
-//    }
 @Override
 public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
     String leftVar  = ctx.j_call_expr(0).getText();
@@ -385,7 +314,7 @@ public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
 
     validateTypes(leftType, rightType, op, ctx.getStart().getLine());
 
-    // ✅ أنشئ AST node للـ binary expression
+
     ast.jinja.jinjaExpression.JinjaBinaryExpression binaryExpr =
             new ast.jinja.jinjaExpression.JinjaBinaryExpression(ctx.getStart().getLine());
     return binaryExpr;
