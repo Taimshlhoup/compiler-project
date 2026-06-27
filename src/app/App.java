@@ -282,8 +282,8 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        processFile("samples/Testing/errors-test.py");
-        processFile("samples/Testing/Jinja-test.j2");
+        processFile("samples/Testing4/app.py");
+        processFile("samples/Testing4/test.j2");
     }
 
 private static void processFile(String fileName) {

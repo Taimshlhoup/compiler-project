@@ -76,31 +76,20 @@ public static class FunctionMetadata {
 }
     public static final java.util.Map<String, FunctionMetadata> functionRegistry = new java.util.HashMap<>();
 
-//    @Override
-//    public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
-//        FunctionCall functionCall = new FunctionCall(ctx.getStart().getLine());
-//        String funcName = ctx.NAME().getText();
-//        functionCall.setVarName(funcName);
-//
-//        List<String> builtins = List.of(
-//                "print", "len", "range", "int", "str", "float",
-//                "render_template", "redirect", "url_for", "append"
-//        );
-//        if (!builtins.contains(funcName) && !functionRegistry.containsKey(funcName)) {
-//            System.err.println("Semantic Error: Undefined function '" + funcName +
-//                    "' at line " + ctx.getStart().getLine());
-//        }
-//        ArgumentsList argumentsList = null;
-//        if (ctx.arglist() != null) {
-//            argumentsList = new ArgumentListVisitor().visit(ctx.arglist());
-//            functionCall.setArgumentsList(argumentsList);
-//        }
+
 @Override
 public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
     FunctionCall functionCall = new FunctionCall(ctx.getStart().getLine());
     String funcName = ctx.NAME().getText();
     functionCall.setVarName(funcName);
-
+    List<String> builtins = List.of(
+            "print", "len", "range", "int", "str", "float",
+            "render_template", "redirect", "url_for", "append"
+    );
+    if (!builtins.contains(funcName) && !functionRegistry.containsKey(funcName)) {
+        System.err.println("Semantic Error: Undefined function '" + funcName +
+                "' at line " + ctx.getStart().getLine());
+    }
     // ✅ افحص render_template قبل زيارة الـ arglist
     if ("render_template".equals(funcName) && ctx.arglist() != null) {
         symbolTable.SymbolTable currentScope =
@@ -139,64 +128,45 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
         functionCall.setArgumentsList(argumentsList);
     }
 
-    // باقي الكود render_template...
 
 
-//        if ("render_template".equals(funcName)) {
-//            try {
-//
-//                pythonScopeAtRender = symbolTable.SymbolTableManager.INSTANCE.getPythonTable();
-//
-//                // نستخدم جدول الجينجا ليبقى ثابتاً ولا يحذف عند الخروج من دالة البايثون
-//                symbolTable.SymbolTable jinjaTable = symbolTable.SymbolTableManager.INSTANCE.getJinjaTable();
-//
-//                if (jinjaTable != null && ctx.arglist() != null) {
-//                    // جلب النص الكامل للأرغومنتات وتقسيمها بناءً على الفواصل
-//                    String[] args = ctx.arglist().getText().split(",");
-//                    for (String arg : args) {
-//                        if (arg.contains("=")) {
-//                            // استخراج اسم المتغير المكتوب قبل علامة الـ =
-//                            String flaskVar = arg.split("=")[0].trim();
-//                            flaskVar = flaskVar.replaceAll("[^a-zA-Z0-9_]", "");
-//
-//                            if (!flaskVar.isEmpty()) {
-//                                // ضخ المتغير الممرر فعلياً في جدول الجينجا الثابت
-//                                jinjaTable.insert(flaskVar);
-//                                jinjaTable.setAttribute(flaskVar, "Type", "Dynamic");
-//                            }
-//                        }
-//                    }
-//                }
-//            } catch (Exception e) {
-//                // حماية لضمان استمرار المفسر
-//            }
-//        }
+    if ("render_template".equals(funcName)) {
+        try {
+            symbolTable.SymbolTable currentScope = SymbolTableManager.INSTANCE.getPythonTable();
+            pythonScopeAtRender = currentScope;
+            symbolTable.SymbolTable jinjaTable = SymbolTableManager.INSTANCE.getJinjaTable();
 
-        if ("render_template".equals(funcName)) {
-            try {
-                pythonScopeAtRender = SymbolTableManager.INSTANCE.getPythonTable();
-
-                symbolTable.SymbolTable jinjaTable = SymbolTableManager.INSTANCE.getJinjaTable();
-
-                if (jinjaTable != null && ctx.arglist() != null) {
+            if (jinjaTable != null && ctx.arglist() != null) {
+                String[] args = ctx.arglist().getText().split(",");
+                for (String arg : args) {
+                    if (arg.contains("=")) {
+                        String[] parts = arg.split("=", 2);
+                        String flaskVar = parts[0].trim().replaceAll("[^a-zA-Z0-9_]", "");
+                        String valueVar = parts[1].trim().replaceAll("[^a-zA-Z0-9_]", "");
 
 
-                    String[] args = ctx.arglist().getText().split(",");
-                    for (String arg : args) {
 
-                        if (arg.contains("=")) {
-                            String[] parts = arg.split("=", 2);
-                            String flaskVar = parts[0].trim().replaceAll("[^a-zA-Z0-9_]", "");
-                            String valueVar = parts[1].trim().replaceAll("[^a-zA-Z0-9_]", "");
 
+                        if (!flaskVar.isEmpty()) {
+                            jinjaTable.insert(flaskVar);
+                            jinjaTable.setAttribute(flaskVar, "Type", "Dynamic");
+
+                            if (!valueVar.isEmpty() &&
+                                    currentScope != null) {
+                                symbolTable.SymbolEntry entry = currentScope.lookup(valueVar);
+                                if (entry == null || "Dynamic".equals(entry.getAttribute("Type"))) {
+                                    jinjaTable.setAttribute(flaskVar, "UndefinedInPython", "true");
+
+                                }
+                            }
                         }
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
+    }
 
         FunctionMetadata funcData = functionRegistry.get(funcName);
 

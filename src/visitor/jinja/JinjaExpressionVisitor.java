@@ -1,132 +1,4 @@
-//package visitor.jinja;
-//
-//import antlr.html.HtmlParser;
-//import antlr.html.HtmlParserBaseVisitor;
-//import ast.jinja.jinjaExpression.JinjaBinaryExpression;
-//import ast.jinja.jinjaExpression.JinjaSimpleExpression;
-//import ast.jinja.jinjaCallExpr.JinjaCallExpression;
-//
-//public class JinjaExpressionVisitor extends HtmlParserBaseVisitor<Object> {
-//
-//    @Override
-//    public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
-//        JinjaBinaryExpression jinjaBinaryExpression = new JinjaBinaryExpression(ctx.getStart().getLine());
-//
-//        // استخدام visit() سيقوم بتشغيل JinjaCallExpressionVisitor تلقائياً
-//        Object left = visit(ctx.j_call_expr(0));
-//        Object right = visit(ctx.j_call_expr(1));
-//
-//        // التحقق الآمن من النوع قبل الـ Casting
-//        if (left instanceof JinjaCallExpression) {
-//            jinjaBinaryExpression.setLeft((JinjaCallExpression) left);
-//        }
-//        if (right instanceof JinjaCallExpression) {
-//            jinjaBinaryExpression.setRight((JinjaCallExpression) right);
-//        }
-//
-//        jinjaBinaryExpression.setOperator(ctx.getChild(1).getText());
-//        return jinjaBinaryExpression;
-//    }
-//
-//    @Override
-//    public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
-//        // سطر تتبع (Debug) للتأكد من تسلسل الزيارة
-//        System.out.println("DEBUG: Passing through JinjaSimpleExpr -> " + ctx.getText());
-//
-//        // هنا السلسلة: Expression -> CallExpression -> Atom -> SymbolTable Check
-//        Object callExpr = visit(ctx.j_call_expr());
-//
-//        JinjaSimpleExpression jinjaSimpleExpression = new JinjaSimpleExpression(ctx.getStart().getLine());
-//
-//        if (callExpr instanceof JinjaCallExpression) {
-//            jinjaSimpleExpression.setExpr((JinjaCallExpression) callExpr);
-//        }
-//
-//        return jinjaSimpleExpression;
-//    }
-//}
-//    @Override
-//    public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
-//        System.out.println("DEBUG: Passing through JinjaSimpleExpr -> " + ctx.getText());
-//
-//        // إصلاح الانقطاع: استدعاء callVisitor بدلاً من visit() الافتراضية
-//        Object callExpr = callVisitor.visit(ctx.j_call_expr());
-//
-//        if (callExpr == null) {
-//            System.err.println("CRITICAL DEBUG: callVisitor returned null for " + ctx.getText());
-//        }
-//
-//        JinjaSimpleExpression jinjaSimpleExpression = new JinjaSimpleExpression(ctx.getStart().getLine());
-//
-//        if (callExpr instanceof JinjaCallExpression) {
-//            jinjaSimpleExpression.setExpr((JinjaCallExpression) callExpr);
-//        }
-//
-//        return jinjaSimpleExpression;
-//    }
 
-
-//package visitor.jinja;
-//
-//import antlr.html.HtmlParser;
-//import antlr.html.HtmlParserBaseVisitor;
-//import ast.jinja.jinjaExpression.JinjaBinaryExpression;
-//import ast.jinja.jinjaExpression.JinjaSimpleExpression;
-//import ast.jinja.jinjaCallExpr.JinjaCallExpression;
-//import symbolTable.SymbolEntry;
-//import symbolTable.SymbolTableManager;
-//
-//public class JinjaExpressionVisitor extends HtmlParserBaseVisitor<Object> {
-//
-//    // تعريف الـ Visitor التالي في السلسلة كمتغير ثابت لتجنب التكرار
-//    private final JinjaCallExpressionVisitor callVisitor = new JinjaCallExpressionVisitor();
-//
-//    @Override
-//    public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
-//        // 1. جلب أسماء المتغيرات
-//        String leftVar = ctx.j_call_expr(0).getText();
-//        String rightVar = ctx.j_call_expr(1).getText();
-//        String op = ctx.getChild(1).getText(); // سيعيد علامة < أو >
-//
-//        // 2. البحث عن بياناتهم في جدول الرموز
-//        SymbolEntry leftEntry = SymbolTableManager.INSTANCE.lookup(leftVar, "jinja");
-//        SymbolEntry rightEntry = SymbolTableManager.INSTANCE.lookup(rightVar, "jinja");
-//
-//        if (leftEntry != null && rightEntry != null) {
-//            String leftType = (String) leftEntry.getAttribute("Type");
-//            String rightType = (String) rightEntry.getAttribute("Type");
-//
-//            // 3. فحص تطابق الأنواع للمقارنة
-//            if (!leftType.equals(rightType)) {
-//                System.err.println("Semantic Error: Type Mismatch at line " + ctx.getStart().getLine() +
-//                        ". Cannot compare '" + leftType + "' with '" + rightType + "' using operator '" + op + "'.");
-//            }
-//        }
-//
-//        return super.visitJinjaBinaryExpr(ctx);
-//    }
-//
-//
-//@Override
-//public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
-//    // 1. استخراج اسم المتغير (مثلاً unknown_variable)
-//    String varName = ctx.j_call_expr().getText();
-//
-//    // 2. البحث عنه باستخدام المانجر (اللي صار مربوط ببايثون)
-//    SymbolEntry entry = SymbolTableManager.INSTANCE.lookup(varName, "jinja");
-//
-//    if (entry == null) {
-//        // إذا مش موجود، اطبع الخطأ الأحمر اللي بنحبه
-//        System.err.println("Semantic Error: Undefined variable '" + varName + "' in Jinja template at line " + ctx.getStart().getLine());
-//    } else {
-//        // إذا موجود، سجله في جدول الجينجا عشان يظهر بالطباعة النهائية
-//        SymbolTableManager.INSTANCE.getJinjaTable().setAttribute(varName, "Type", entry.getAttribute("Type"));
-//        SymbolTableManager.INSTANCE.getJinjaTable().setAttribute(varName, "Source", "From Python Context");
-//    }
-//
-//    return super.visitJinjaSimpleExpr(ctx);
-//}
-//}
 
 package visitor.jinja;
 
@@ -168,15 +40,21 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
     symbolTable.SymbolTable pythonTable = visitor.python.AtomExpressionVisitor.pythonScopeAtRender;
 
     if (jinjaTable != null && jinjaTable.lookup(baseVar) != null) {
-        jinjaTable.setAttribute(baseVar, "Type", "Dynamic");
-    } else if (pythonTable != null && pythonTable.lookup(baseVar) != null) {
-        System.err.println("Semantic Error: Missing flask variable '" + fullText +
-                "' at line " + ctx.getStart().getLine() +
-                " -> variable is defined in Python but not passed to render_template()");
+        Object flag = jinjaTable.lookup(baseVar).getAttribute("UndefinedInPython");
+        if ("true".equals(flag)) {
+            System.err.println("Semantic Error: Undefined variable '" + fullText +
+                    "' in Jinja template at line " + ctx.getStart().getLine());
+        } else {
+            jinjaTable.setAttribute(baseVar, "Type", "Dynamic");
+        }
     } else if (jinjaTable != null && jinjaTable.isOutOfScope(baseVar)) {
         System.err.println("Semantic Error: Scope error , variable '" + fullText +
                 "' is defined inside a block and cannot be accessed outside at line " +
                 ctx.getStart().getLine());
+    } else if (pythonTable != null && pythonTable.lookup(baseVar) != null) {
+        System.err.println("Semantic Error: Missing flask variable '" + fullText +
+                "' at line " + ctx.getStart().getLine() +
+                " -> variable is defined in Python but not passed to render_template()");
     } else {
         System.err.println("Semantic Error: Undefined variable '" + fullText +
                 "' in Jinja template at line " + ctx.getStart().getLine());
