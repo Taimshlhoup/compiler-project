@@ -27,4 +27,8 @@ public abstract class Argument extends ASTNode {
     public PythonExpression getArg() {
         return arg;
     }
+    @Override
+    public String generateCode() {
+        return getArg() != null ? getArg().generateCode() : "";
+    }
 }

@@ -26,5 +26,15 @@ public class JinjaIfStatement extends JinjaStatement {
                 " ( " + condition.toString() + " ) " +
                 Consts.printIndent(3) + htmlContent.toString();
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append("{% if ").append(condition != null ? condition.generateCode() : "").append(" %}\n");
+        if (htmlContent != null) {
+            code.append(htmlContent.generateCode());
+        }
+        code.append("{% endif %}\n");
+        return code.toString();
+    }
 }
 

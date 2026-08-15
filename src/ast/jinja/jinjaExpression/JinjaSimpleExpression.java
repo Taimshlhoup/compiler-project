@@ -40,4 +40,12 @@ public class JinjaSimpleExpression extends JinjaExpression {
     public String toString() {
         return expr != null ? expr.toString() : "null";
     }
+    @Override
+    public String generateCode() {
+        return expr != null ? expr.generateCode() : "";
+    }
+
+    public String generateDisplayCode() {
+        return expr != null ? "{{ " + expr.generateCode() + " }}" : "";
+    }
 }

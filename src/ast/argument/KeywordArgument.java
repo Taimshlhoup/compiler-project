@@ -15,4 +15,8 @@ public class KeywordArgument extends Argument {
     public String toString() {
         return argName + " = " + super.toString();
     }
+    @Override
+    public String generateCode() {
+        return argName + "=" + super.generateCode();
+    }
 }

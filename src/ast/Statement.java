@@ -35,4 +35,20 @@ public class Statement extends ASTNode {
         }
         return stringBuilder.toString();
     }
+    @Override
+    public String generateCode() {
+        if (isPass) {
+            return "pass";
+        }
+        StringBuilder code = new StringBuilder();
+        for (CompoundStatement compoundStatement : compoundStatements) {
+            if (compoundStatement != null) {
+                String stmtCode = compoundStatement.generateCode();
+                if (!stmtCode.isEmpty()) {
+                    code.append(stmtCode).append("\n");
+                }
+            }
+        }
+        return code.toString();
+    }
 }

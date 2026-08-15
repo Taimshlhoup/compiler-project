@@ -12,4 +12,8 @@ public abstract class ReturnStatement extends CompoundStatement {
     public String toString() {
         return "return ";
     }
+    @Override
+    public String generateCode() {
+        return "return ";
+    }
 }

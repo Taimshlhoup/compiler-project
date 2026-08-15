@@ -16,4 +16,9 @@ public class SimpleReturnStatement extends ReturnStatement {
     public String toString() {
         return super.toString() + atom.toString();
     }
+    @Override
+    public String generateCode() {
+        return super.generateCode() + (atom != null ? atom.generateCode() : "");
+    }
+
 }

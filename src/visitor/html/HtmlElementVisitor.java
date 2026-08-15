@@ -16,6 +16,20 @@ public class HtmlElementVisitor extends HtmlParserBaseVisitor<HtmlElement> {
     @Override
     public HtmlElement visitTagElement(HtmlParser.TagElementContext ctx) {
         TagElement tagElement = new TagElement(ctx.getStart().getLine());
+
+        if (ctx.tag_content() != null && ctx.tag_content().size() > 0) {
+            String firstTag = ctx.tag_content(0).getText();
+            if (firstTag.equals("/")) {
+                // وسم إغلاق
+                if (ctx.tag_content().size() > 1) {
+                    tagElement.setTagName("/" + ctx.tag_content(1).getText());
+                }
+            } else {
+                // وسم افتتاح
+                tagElement.setTagName(firstTag);
+            }
+        }
+
         TagContentVisitor tagContentVisitor = new TagContentVisitor();
         if (ctx.tag_content() != null) {
             List<TagElementItem> tagElementItemList = new ArrayList<>();

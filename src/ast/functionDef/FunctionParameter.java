@@ -23,4 +23,8 @@ public class FunctionParameter extends ASTNode {
     public String toString() {
         return id + (value == null ? "" : value.toString());
     }
+    @Override
+    public String generateCode() {
+        return id + (value != null ? "=" + value.generateCode() : "");
+    }
 }

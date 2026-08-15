@@ -65,4 +65,15 @@ public class JinjaForStatement extends JinjaStatement {
                 " in " + (iterable != null ? iterable.toString() : "null") + " ) " +
                 (htmlContent != null ? Consts.printIndent(3) + htmlContent.toString() : "");
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append("{% for ").append(id).append(" in ")
+                .append(iterable != null ? iterable.generateCode() : "").append(" %}\n");
+        if (htmlContent != null) {
+            code.append(htmlContent.generateCode());
+        }
+        code.append("{% endfor %}\n");
+        return code.toString();
+    }
 }

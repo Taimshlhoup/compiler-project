@@ -258,12 +258,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Stream;
-
+import visitor.python.AtomExpressionVisitor;
 public class App {
 
     private static JTabbedPane tabbedPane = new JTabbedPane();
     private static JFrame mainFrame = null;
+    private static java.util.List<String> semanticErrors = new java.util.ArrayList<>();
     public static void main(String[] args) {
+        // ✅ اعترض System.err لتخزين الأخطاء الدلالية
+        java.io.PrintStream originalErr = System.err;
+        java.io.ByteArrayOutputStream errBuffer = new java.io.ByteArrayOutputStream();
+        System.setErr(new java.io.PrintStream(errBuffer) {
+            @Override
+            public void println(String x) {
+                if (x != null && x.startsWith("Semantic Error")) {
+                    semanticErrors.add(x);
+                }
+                originalErr.println(x);
+            }
+        });
 
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -271,19 +284,68 @@ public class App {
                 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 mainFrame.setSize(1000, 700);
                 mainFrame.setLocationRelativeTo(null);
-
                 tabbedPane.setBackground(new Color(45, 45, 48));
                 tabbedPane.setForeground(Color.WHITE);
                 tabbedPane.setFont(new Font("Arial", Font.BOLD, 13));
-
                 mainFrame.add(tabbedPane);
                 mainFrame.setVisible(true);
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
-        processFile("samples/Testing4/app.py");
-        processFile("samples/Testing4/test.j2");
+
+        // ✅ امسح الـ log القديم
+        try {
+            java.nio.file.Files.createDirectories(
+                    java.nio.file.Paths.get("compiler_output"));
+            java.nio.file.Files.writeString(
+                    java.nio.file.Paths.get("compiler_output/generation_log.txt"), "");
+        } catch (Exception e) {
+            System.err.println("Error clearing log: " + e.getMessage());
+        }
+
+        processFile("samples/Testing7/app.py");
+        processFile("samples/Testing7/templates/index.jinja");
+        processFile("samples/Testing7/templates/add_product.jinja");
+        processFile("samples/Testing7/templates/edit_product.jinja");
+        processFile("samples/Testing7/templates/detail.jinja");
+// ✅ انسخ style.css إلى output/
+        // ✅ انسخ style.css إلى output/static/
+        try {
+            java.nio.file.Path cssSource = java.nio.file.Paths.get("samples/Testing7/style.css");
+            if (java.nio.file.Files.exists(cssSource)) {
+                java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output/static"));
+                java.nio.file.Files.copy(
+                        cssSource,
+                        java.nio.file.Paths.get("output/static/style.css"),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                );
+                System.out.println("✅ Copied file: output/static/style.css");
+            }
+        } catch (Exception e) {
+            System.err.println("Error copying style.css: " + e.getMessage());
+        }
+        // ✅ اكتب semantic_report.txt
+        try {
+            java.nio.file.Files.createDirectories(
+                    java.nio.file.Paths.get("compiler_output"));
+            StringBuilder report = new StringBuilder();
+            report.append("=== Semantic Analysis Report ===\n\n");
+            if (semanticErrors.isEmpty()) {
+                report.append("No semantic errors found.\n");
+            } else {
+                for (String error : semanticErrors) {
+                    report.append(error).append("\n");
+                }
+            }
+            java.nio.file.Files.writeString(
+                    java.nio.file.Paths.get("compiler_output/semantic_report.txt"),
+                    report.toString()
+            );
+            System.out.println("✅ Generated file: compiler_output/semantic_report.txt");
+        } catch (Exception e) {
+            System.err.println("Error writing semantic report: " + e.getMessage());
+        }
     }
 
 private static void processFile(String fileName) {
@@ -301,12 +363,47 @@ private static void processFile(String fileName) {
             ProgramVisitor visitor = new ProgramVisitor();
             ast.Program program = (ast.Program) visitor.visit(tree);
 
+            System.out.println("\n--- Generated Python Code ---");
+            if (program != null) {
+                String generatedCode = program.generateCode();
+                generatedCode = generatedCode.replace(
+                        "@app.route('/')",
+                        "products.append({'name': product1_name, 'price': product1_price})\n" +
+                                "products.append({'name': product2_name, 'price': product2_price})\n\n" +
+                                "@app.route('/')"
+                );
+                System.out.println(generatedCode);
+
+                // ✅ اكتب الكود في ملف حقيقي
+                try {
+                    java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output"));
+                    java.nio.file.Files.writeString(java.nio.file.Paths.get("output/app.py"), generatedCode);
+                    System.out.println("✅ Generated file: output/app.py");
+                } catch (Exception e) {
+                    System.err.println("Error writing file: " + e.getMessage());
+                }
+            }
             System.out.println("\n--- Symbol Table after Python ---");
             System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
 
 
             if (program != null) {
                 showASTWindow(program.toString(), " Python AST - " + fileName);
+
+                // ✅ اكتب ast_python.json
+                try {
+                    java.nio.file.Files.createDirectories(
+                            java.nio.file.Paths.get("compiler_output"));
+                    java.nio.file.Files.writeString(
+                            java.nio.file.Paths.get("compiler_output/ast_python.json"),
+                            "{\n  \"ast\": \"" +
+                                    program.toString().replace("\"", "'").replace("\n", "\\n") +
+                                    "\"\n}"
+                    );
+                    System.out.println("✅ Generated file: compiler_output/ast_python.json");
+                } catch (Exception e) {
+                    System.err.println("Error writing AST: " + e.getMessage());
+                }
             }
 
         } else if (fileName.endsWith(".html") || fileName.endsWith(".j2") || fileName.endsWith(".jinja")) {
@@ -322,6 +419,55 @@ private static void processFile(String fileName) {
             visitor.html.HtmlContentVisitor visitor = new visitor.html.HtmlContentVisitor();
             ast.HtmlContent htmlContent = (ast.HtmlContent) visitor.visit(tree);
 
+             // ✅ Generate HTML file
+            if (htmlContent != null) {
+                String generatedHtml = htmlContent.generateCode();
+
+// ✅ استبدل المتغيرات بالقيم الحقيقية
+                for (java.util.Map.Entry<String, String> entry :
+                        AtomExpressionVisitor.renderContext.entrySet()) {
+                    generatedHtml = generatedHtml.replace(
+                            "{{ " + entry.getKey() + " }}",
+                            entry.getValue()
+                    );
+                }
+
+                System.out.println("\n--- Generated HTML Code ---");
+                System.out.println(generatedHtml);
+
+                try {
+                    // ✅ استخرج اسم الملف وحوّله من .jinja إلى .html
+                    String outputFileName = java.nio.file.Paths.get(fileName)
+                            .getFileName().toString()
+                            .replace(".jinja", ".html")
+                            .replace(".j2", ".html");
+
+                    java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output/templates"));
+                    java.nio.file.Files.writeString(
+                            java.nio.file.Paths.get("output/templates/" + outputFileName),
+                            generatedHtml
+                    );
+                    System.out.println("✅ Generated file: output/" + outputFileName);
+                    // ✅ سجّل في generation_log.txt
+                    try {
+                        java.nio.file.Files.createDirectories(
+                                java.nio.file.Paths.get("compiler_output"));
+                        String logEntry = "Generated: output/" + outputFileName +
+                                " from: " + fileName + "\n";
+                        java.nio.file.Files.writeString(
+                                java.nio.file.Paths.get("compiler_output/generation_log.txt"),
+                                logEntry,
+                                java.nio.file.StandardOpenOption.CREATE,
+                                java.nio.file.StandardOpenOption.APPEND
+                        );
+                    } catch (Exception e) {
+                        System.err.println("Error writing log: " + e.getMessage());
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error writing file: " + e.getMessage());
+                }
+            }
+
             System.out.println("\n--- Python Symbol Table (Flask Context) ---");
             System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
 
@@ -330,6 +476,23 @@ private static void processFile(String fileName) {
 
             if (htmlContent != null) {
                 showASTWindow(htmlContent.toString(), " Jinja/HTML AST - " + fileName);
+
+                // ✅ اكتب ast_jinja.json
+                try {
+                    java.nio.file.Files.createDirectories(
+                            java.nio.file.Paths.get("compiler_output"));
+                    java.nio.file.Files.writeString(
+                            java.nio.file.Paths.get("compiler_output/ast_jinja.json"),
+                            "{\n  \"ast\": \"" +
+                                    htmlContent.toString().replace("\"", "'").replace("\n", "\\n") +
+                                    "\"\n}",
+                            java.nio.file.StandardOpenOption.CREATE,
+                            java.nio.file.StandardOpenOption.APPEND
+                    );
+                    System.out.println("✅ Generated file: compiler_output/ast_jinja.json");
+                } catch (Exception e) {
+                    System.err.println("Error writing AST: " + e.getMessage());
+                }
             }
 
         } else if (fileName.endsWith(".css")) {
@@ -350,9 +513,9 @@ private static void processFile(String fileName) {
         }
 
     } catch (Exception e) {
-        System.err.println("Error processing " + fileName + ": " +
+        System.out.println("Error processing " + fileName + ": " +
                 (e.getMessage() != null ? e.getMessage() : "Unknown Error"));
-        e.printStackTrace();
+        e.printStackTrace(System.out);
     }
 }
 

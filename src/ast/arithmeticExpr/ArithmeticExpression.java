@@ -54,4 +54,15 @@ public class ArithmeticExpression extends SimpleExpression {
         }
         return stringBuilder.toString();
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(left != null ? left.generateCode() : "");
+        if (right != null) {
+            for (PythonExpression expr : right) {
+                code.append(" ").append(operator).append(" ").append(expr.generateCode());
+            }
+        }
+        return code.toString();
+    }
 }

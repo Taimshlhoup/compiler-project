@@ -21,4 +21,9 @@ public class JinjaArithmeticExpression extends JinjaExpression {
     public String toString() {
         return super.toString() + " ( " + left + " " + operator + " " + right + " ) ";
     }
+    @Override
+    public String generateCode() {
+        return left + " " + operator + " " + right;
+    }
+
 }

@@ -37,4 +37,15 @@ public class ComplexArguments extends ArgumentsList {
         }
         return stringBuilder.toString();
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (Argument arg : arguments) {
+            code.append(arg.generateCode());
+            if (arguments.indexOf(arg) != arguments.size() - 1) {
+                code.append(", ");
+            }
+        }
+        return code.toString();
+    }
 }

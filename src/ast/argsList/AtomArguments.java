@@ -28,4 +28,15 @@ public class AtomArguments extends ArgumentsList {
         }
         return stringBuilder.toString();
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (Atom atom : args) {
+            code.append(atom.generateCode());
+            if (args.indexOf(atom) != args.size() - 1) {
+                code.append(", ");
+            }
+        }
+        return code.toString();
+    }
 }

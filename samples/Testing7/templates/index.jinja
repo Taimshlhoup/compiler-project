@@ -1,0 +1,8 @@
+<link rel="stylesheet" href="/static/style.css">
+<h2>Products</h2>
+<a href="/add">Add Product</a>
+{% for product in products %}
+<p>{{ product.name }} - {{ product.price }}
+<a href="/detail/{{ loop.index0 }}">View</a>
+<a href="/delete/{{ loop.index0 }}">Delete</a></p>
+{% endfor %}

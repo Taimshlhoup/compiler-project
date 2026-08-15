@@ -14,6 +14,7 @@ public class AtomExpressionVisitor extends PythonParserBaseVisitor<AtomExpressio
     private final AtomVisitor atomVisitor = new AtomVisitor();
 
     public static symbolTable.SymbolTable pythonScopeAtRender = null;
+    public static final java.util.Map<String, String> renderContext = new java.util.HashMap<>();
 
 
     @Override
@@ -143,7 +144,16 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
                         String[] parts = arg.split("=", 2);
                         String flaskVar = parts[0].trim().replaceAll("[^a-zA-Z0-9_]", "");
                         String valueVar = parts[1].trim().replaceAll("[^a-zA-Z0-9_]", "");
-
+                        if (!flaskVar.isEmpty() && currentScope != null) {
+                            symbolTable.SymbolEntry entry = currentScope.lookup(valueVar);
+                            if (entry != null) {
+                                Object value = entry.getAttribute("Value");
+                                if (value != null) {
+                                    String valueStr = value.toString().replaceAll("^\"|\"$", "");
+                                    renderContext.put(flaskVar, valueStr);
+                                }
+                            }
+                        }
 
 
 

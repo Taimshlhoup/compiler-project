@@ -77,8 +77,8 @@ public class HtmlContentVisitor extends HtmlParserBaseVisitor<Object> {
 
     @Override
     public Object visitJinjaExprItem(HtmlParser.JinjaExprItemContext ctx) {
-        // تفويض الزيارة لـ JinjaExpressionVisitor للدخول لجدول الرموز
-        return new visitor.jinja.JinjaExpressionVisitor().visit(ctx.jinjaExpressionBlock());
+        Object result = new visitor.jinja.JinjaExpressionVisitor().visit(ctx.jinjaExpressionBlock());
+        return result;
     }
 
     @Override
@@ -92,5 +92,13 @@ public class HtmlContentVisitor extends HtmlParserBaseVisitor<Object> {
         HtmlTextItem textItem = new HtmlTextItem(ctx.getStart().getLine());
         textItem.setText(ctx.HTML_TEXT().getText());
         return textItem;
+    }
+    @Override
+    public Object visitJinjaExprBlock(HtmlParser.JinjaExprBlockContext ctx) {
+        return visit(ctx.j_expression());
+    }
+    @Override
+    public Object visitHtmlElementItem(HtmlParser.HtmlElementItemContext ctx) {
+        return new HtmlElementVisitor().visit(ctx.htmlElement());
     }
 }

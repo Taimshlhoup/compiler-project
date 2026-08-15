@@ -17,4 +17,8 @@ public class ComplexReturnStatement extends ReturnStatement {
     public String toString() {
         return super.toString() + pythonExpression.toString();
     }
+    @Override
+    public String generateCode() {
+        return super.generateCode() + (pythonExpression != null ? pythonExpression.generateCode() : "");
+    }
 }

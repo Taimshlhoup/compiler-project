@@ -248,5 +248,16 @@ public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
                 "/", ctx.getStart().getLine()
         );
     }
+    @Override
+    public Object visitJinjaExprBlock(HtmlParser.JinjaExprBlockContext ctx) {
+        // زيارة الـ j_expression داخل {{ }}
+        Object result = visit(ctx.j_expression());
+
+        // إذا كانت JinjaSimpleExpression نضيف {{ }} عند عرضها
+        if (result instanceof ast.jinja.jinjaExpression.JinjaSimpleExpression) {
+            return result;
+        }
+        return result;
+    }
 }
 

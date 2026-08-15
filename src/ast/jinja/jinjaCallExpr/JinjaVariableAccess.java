@@ -15,4 +15,8 @@ public class JinjaVariableAccess extends JinjaCallExpression {
     public String toString() {
         return dottedName;
     }
+    @Override
+    public String generateCode() {
+        return dottedName != null ? dottedName : "";
+    }
 }

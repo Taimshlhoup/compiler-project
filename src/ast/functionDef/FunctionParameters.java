@@ -24,4 +24,15 @@ public class FunctionParameters extends ASTNode {
         }
         return stringBuilder.toString();
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (FunctionParameter param : parameters) {
+            code.append(param.generateCode());
+            if (parameters.indexOf(param) != parameters.size() - 1) {
+                code.append(", ");
+            }
+        }
+        return code.toString();
+    }
 }

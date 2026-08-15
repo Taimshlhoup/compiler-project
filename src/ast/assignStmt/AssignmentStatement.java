@@ -18,4 +18,11 @@ public abstract class AssignmentStatement extends CompoundStatement {
     public String toString() {
         return super.toString() + Consts.printIndent(2) + var.toString() + " = " + Consts.printIndent(2);
     }
+    @Override
+    public String generateCode() {
+        if (var != null) {
+            return var.generateCode() + " = ";
+        }
+        return "";
+    }
 }

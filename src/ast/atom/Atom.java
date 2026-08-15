@@ -21,5 +21,9 @@ public abstract class Atom extends ASTNode {
     public Object getValue() {
         return value;
     }
+    @Override
+    public String generateCode() {
+        return value != null ? value.toString() : "";
+    }
 }
 

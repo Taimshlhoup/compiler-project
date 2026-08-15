@@ -35,4 +35,11 @@ public class FunctionCall extends AtomExpression {
         }
         return super.toString() + "( " + argumentsList.toString() + " )";
     }
+    @Override
+    public String generateCode() {
+        if (argumentsList == null) {
+            return super.getVarName() + "()";
+        }
+        return super.getVarName() + "(" + argumentsList.generateCode() + ")";
+    }
 }

@@ -26,4 +26,8 @@ public abstract class AtomExpression extends PythonExpression {
     public String toString() {
         return super.toString() + " ( " + varName + " ";
     }
+    @Override
+    public String generateCode() {
+        return varName != null ? varName : "";
+    }
 }

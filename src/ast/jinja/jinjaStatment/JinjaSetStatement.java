@@ -38,4 +38,9 @@ public String toString() {
             " ( " + variableName +
             " = " + (value != null ? value.toString() : "null") + " ) ";
 }
+    @Override
+    public String generateCode() {
+        return "{% set " + variableName + " = " +
+                (value != null ? value.generateCode() : "") + " %}\n";
+    }
 }

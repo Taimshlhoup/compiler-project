@@ -8,7 +8,9 @@ public abstract class ASTNode {
         this.node_name = node_name;
         this.line_number = line_number;
     }
-
+    public String generateCode() {
+        return "";
+    }
     public void setNode_name(String node_name) {
         this.node_name = node_name;
     }

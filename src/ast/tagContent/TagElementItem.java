@@ -27,4 +27,11 @@ public class TagElementItem extends ASTNode {
             return "";
         }
     }
+    @Override
+    public String generateCode() {
+        if (attributeName != null && !attributeName.isEmpty()) {
+            return attributeName + (attributeValue != null ? "=" + attributeValue : "");
+        }
+        return "";
+    }
 }

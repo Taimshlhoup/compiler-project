@@ -13,4 +13,8 @@ public class JinjaAtom extends JinjaCallExpression {
     public String toString() {
         return atom.toString();
     }
+    @Override
+    public String generateCode() {
+        return atom != null ? atom.generateCode() : "";
+    }
 }

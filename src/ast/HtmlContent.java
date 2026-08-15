@@ -28,4 +28,23 @@ public class HtmlContent extends ASTNode {
 
         return stringBuilder.toString();
     }
+    @Override
+    public String generateCode() {
+        StringBuilder code = new StringBuilder();
+        if (items != null) {
+            for (HtmlContentItem item : items) {
+                if (item instanceof ast.jinja.jinjaExpression.JinjaSimpleExpression) {
+                    code.append(((ast.jinja.jinjaExpression.JinjaSimpleExpression) item).generateDisplayCode());
+                } else if (item instanceof ast.jinja.jinjaExpression.JinjaArithmeticExpression) {
+                    code.append("{{ ").append(item.generateCode()).append(" }}");
+                } else if (item instanceof ast.htmlElement.TagElement) {
+                    code.append(item.generateCode());
+                } else {
+                    // HtmlTextItem — بدون سطر جديد
+                    code.append(item.generateCode());
+                }
+            }
+        }
+        return code.toString();
+    }
 }

@@ -23,4 +23,8 @@ public class Decorator extends ASTNode {
     public String toString() {
         return super.toString() + " ( @" + decoratorName + "( " + arguments.toString() + ") ";
     }
+    @Override
+    public String generateCode() {
+        return "@" + decoratorName + "(" + (arguments != null ? arguments.generateCode() : "") + ")";
+    }
 }
