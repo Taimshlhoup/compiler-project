@@ -22,4 +22,12 @@ public class AtomKeyValue extends KeyValue{
     public String toString() {
         return super.toString() + value.toString();
     }
+    @Override
+    public String generateCode() {
+        return getKey().getValue() + ": " + value.generateCode();
+    }
+    @Override
+    public String getValueCode() {
+        return value.generateCode();
+    }
 }

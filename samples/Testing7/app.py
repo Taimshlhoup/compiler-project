@@ -5,7 +5,7 @@ product2_price = 800
 
 @app.route('/')
 def index():
-    return render_template('index.jinja', products=products)
+    return render_template('index.jinja', product1_name=product1_name, product1_price=product1_price, product2_name=product2_name, product2_price=product2_price)
 
 @app.route('/add')
 def add():
@@ -15,7 +15,7 @@ def add():
 
 @app.route('/detail')
 def detail():
-    return render_template('detail.jinja')
+    return render_template('detail.jinja', product1_name=product1_name, product1_price=product1_price)
 
 @app.route('/delete')
 def delete():

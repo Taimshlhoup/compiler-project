@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="style.css">
+<h2>Products</h2>
+<a href="add_product.html">Add Product</a>
+{% for product in products %}
+<div class="product-card">
+<h3>{{ product.name }}</h3>
+<p class="price">${{ product.price }}</p>
+<div class="card-actions">
+<a href="detail_{{ product.index }}.html">View</a>
+<a href="#" onclick="deleteProduct({{ product.index }})">Delete</a>
+</div>
+</div>
+{% endfor %}

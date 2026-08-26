@@ -14,7 +14,9 @@ public class DictionaryLiteral extends ComplexExpression {
     public void setKeyValues(List<KeyValue> keyValues) {
         this.keyValues = keyValues;
     }
-
+    public List<KeyValue> getKeyValues() {
+        return keyValues;
+    } 
     @Override
     public String symbolTablePrint() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -37,5 +39,18 @@ public class DictionaryLiteral extends ComplexExpression {
         }
         stringBuilder.append(" }");
         return stringBuilder.toString();
+    }
+    @Override
+    public String generateCode() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        if (keyValues != null) {
+            for (int i = 0; i < keyValues.size(); i++) {
+                sb.append(keyValues.get(i).generateCode());
+                if (i < keyValues.size() - 1) sb.append(", ");
+            }
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

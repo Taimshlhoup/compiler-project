@@ -140,7 +140,12 @@ bool_exp:
     ;
 
 list_items
-    : atom (COMMA atom)* COMMA? # ListItems
+    : list_item (COMMA list_item)* COMMA? # ListItems
+    ;
+
+list_item
+    : atom                          # AtomListItem
+    | LKBRACE dict_maker? RKBRACE   # DictListItem
     ;
 
 dict_maker

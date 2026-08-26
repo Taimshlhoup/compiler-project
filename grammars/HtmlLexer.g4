@@ -30,9 +30,6 @@ SCRIPTLET
     : '<%' .*? '%>'
     ;
 
-SEA_WS
-    : [ \t\r\n]+ -> channel(HIDDEN)
-    ;
 
 STYLE_OPEN
     : '<style' ~'>'* '>' -> pushMode(STYLE_MODE)
@@ -45,6 +42,12 @@ TAG_OPEN
 HTML_TEXT
    : ~[<{"] (~[<{"])*
    ;
+
+SEA_WS
+    : [ \t\r\n]+ -> channel(HIDDEN)
+    ;
+
+
 // =================== TAG_MODE MODE (Inside <...>) ===================
 mode TAG_MODE;
 

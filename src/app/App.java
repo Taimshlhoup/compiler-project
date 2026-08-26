@@ -1,237 +1,4 @@
-//package app;
-//
-//import antlr.html.HtmlLexer;
-//import antlr.html.HtmlParser;
-//import antlr.python.PythonLexer;
-//import antlr.python.PythonParser;
-//import listener.CustomErrorListener;
-//import org.antlr.v4.gui.TreeViewer;
-//import org.antlr.v4.runtime.CharStreams;
-//import org.antlr.v4.runtime.CommonTokenStream;
-//import org.antlr.v4.runtime.Lexer;
-//import org.antlr.v4.runtime.Token;
-//import org.antlr.v4.runtime.tree.ParseTree;
-//import visitor.python.ProgramVisitor;
-//
-//import javax.swing.*;
-//import java.awt.*;
-//import java.io.IOException;
-//import java.nio.file.Files;
-//import java.nio.file.Path;
-//import java.nio.file.Paths;
-//import java.util.List;
-//import java.util.stream.Stream;
-//
-//public class App {
-//    public static void main(String[] args) {
-////        processFile("samples/errors-test.py");
-////        processFile("samples/Jinja-test.j2");
-//        if (args.length != 1) {
-//            System.err.println("Usage: java app.App <directory_path_or_file>");
-//        } else {
-//            Path startPath = Paths.get(args[0]);
-//
-//            try (Stream<Path> paths = Files.walk(startPath)) {
-//                paths.filter(Files::isRegularFile)
-//                        .forEach(path -> {
-//                            String fileName = path.toString();
-//                            System.out.println("\n--- Processing: " + fileName + " ---");
-//                            processFile(fileName);
-//                        });
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-////            String fileName = args[0];
-////            try {
-////                // Step 1: Get the tokens stream
-////                CommonTokenStream tokens = getTokenStream(fileName);
-////
-////                // CRITICAL DEBUG STEP: Print all tokens before parsing
-////                debugTokenStream(tokens);
-////
-////                // Step 2: Create the parser and parse
-////                tokens.reset(); // Reset the stream to the beginning for the parser
-////                JinjaFlaskParser parser = new JinjaFlaskParser(tokens);
-////
-////                // Add the custom error listener
-////                parser.removeErrorListeners();
-////                parser.addErrorListener(new CustomErrorListener());
-////
-////                // tell ANTLR to build a parse tree
-////                ParseTree antlrAST = parser.prog();
-////                showParseTree(parser.getRuleNames(), antlrAST);
-////                ProgramVisitor programVisitor = new ProgramVisitor();
-////                Program program = programVisitor.visit(antlrAST);
-////                System.out.println(program);
-////
-////                System.out.println(SymbolTableManager.INSTANCE.getSymbolTable());
-////                // If we reach here, the parse was successful!
-////                System.out.println("--- Parsing SUCCESSFUL! ---");
-////
-////            } catch (Exception e) {
-////                System.err.println("Parsing halted due to error: " + (e.getMessage() != null ? e.getMessage() : "Unknown Error (Likely ANTLR Stack Crash)"));
-////                // Print stack trace for better debugging of 'null' errors
-////                e.printStackTrace();
-////            }
-//        }
-//    }
-//
-//    private static void processFile(String fileName) {
-//        try {
-//            // 1. معالجة ملفات Python فقط (تمت إزالة .txt لتجنب التداخل)
-//
-//            if (fileName.endsWith(".py")) {
-//                System.out.println("\n--- [Python Analysis] Processing: " + fileName + " ---");
-//
-//                PythonLexer lexer = new PythonLexer(CharStreams.fromFileName(fileName));
-//                CommonTokenStream tokens = new CommonTokenStream(lexer);
-//                PythonParser parser = new PythonParser(tokens);
-//
-//                // إعداد مستمع الأخطاء القواعدية قبل البدء
-//                parser.removeErrorListeners();
-//                parser.addErrorListener(new CustomErrorListener());
-//
-//                // بناء شجرة الإعراب وقاعدة البداية
-//                ParseTree tree = parser.prog();
-//
-//                // تشغيل الـ Visitor للتحليل الدلالي (Semantic Analysis)
-//                ProgramVisitor visitor = new ProgramVisitor();
-//                visitor.visit(tree);
-//
-//                // طباعة جدول الرموز بعد انتهاء معالجة ملف البايثون
-//                System.out.println("\n--- Symbol Table after Python ---");
-//                System.out.println(symbolTable.SymbolTableManager.INSTANCE.getPythonTable());
-//
-//            }
-//            // 2. معالجة ملفات HTML و Jinja
-//            else if (fileName.endsWith(".html") || fileName.endsWith(".j2") || fileName.endsWith(".jinja")) {
-//                System.out.println("\n--- [Jinja/HTML Analysis] Processing: " + fileName + " ---");
-//
-//                HtmlLexer lexer = new HtmlLexer(CharStreams.fromFileName(fileName));
-//                CommonTokenStream tokens = new CommonTokenStream(lexer);
-//                HtmlParser parser = new HtmlParser(tokens);
-//
-//                parser.removeErrorListeners();
-//                parser.addErrorListener(new CustomErrorListener());
-//
-//                // قاعدة البداية الخاصة بالـ HTML/Jinja
-//                ParseTree tree = parser.html_content();
-//
-//                // تشغيل الـ Visitor الخاص بالـ HTML الذي يستدعي بدوره JinjaVisitors
-//                visitor.html.HtmlContentVisitor visitor = new visitor.html.HtmlContentVisitor();
-//                visitor.visit(tree);
-//            }
-//            // 3. معالجة ملفات CSS
-//            else if (fileName.endsWith(".css")) {
-//                System.out.println("\n--- [CSS Analysis] Processing: " + fileName + " ---");
-//
-//                antlr.css.CssLexer lexer = new antlr.css.CssLexer(CharStreams.fromFileName(fileName));
-//                CommonTokenStream tokens = new CommonTokenStream(lexer);
-//                antlr.css.CssParser parser = new antlr.css.CssParser(tokens);
-//
-//                parser.removeErrorListeners();
-//                parser.addErrorListener(new CustomErrorListener());
-//
-//                ParseTree tree = parser.style_sheet();
-//
-//                visitor.css.StyleSheetVisitor visitor = new visitor.css.StyleSheetVisitor();
-//                visitor.visit(tree);
-//            }
-//            else {
-//                System.out.println("Skipping file (Unsupported Extension): " + fileName);
-//            }
-//
-//        } catch (Exception e) {
-//            System.err.println("Error processing " + fileName + ": " + (e.getMessage() != null ? e.getMessage() : "Unknown Error"));
-//            // e.printStackTrace(); // فك التعليق في حال أردت تتبع الخطأ بدقة
-//        }
-//    }
-//
-//
-//    private static void showParseTree(String[] ruleNames, ParseTree parseTree) {
-//        TreeViewer viewer = new TreeViewer(
-//                java.util.Arrays.asList(ruleNames),
-//                parseTree
-//        );
-//
-//        // Configure viewer for better display
-//        viewer.setScale(1.5);  // Make text larger (optional)
-//
-//        // Create main panel with border layout
-//        JPanel mainPanel = new JPanel(new BorderLayout());
-//        mainPanel.add(viewer, BorderLayout.CENTER);
-//
-//        // Create scroll pane
-//        JScrollPane scrollPane = new JScrollPane(mainPanel);
-//        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-//
-//        // Add zoom controls for better navigation
-//        JPanel controlPanel = new JPanel();
-//        JButton zoomInButton = new JButton("Zoom In");
-//        JButton zoomOutButton = new JButton("Zoom Out");
-//        JButton resetButton = new JButton("Reset Zoom");
-//
-//        zoomInButton.addActionListener(e -> {
-//            viewer.setScale(viewer.getScale() * 1.2);
-//            viewer.repaint();
-//        });
-//
-//        zoomOutButton.addActionListener(e -> {
-//            viewer.setScale(viewer.getScale() / 1.2);
-//            viewer.repaint();
-//        });
-//
-//        resetButton.addActionListener(e -> {
-//            viewer.setScale(1.0);
-//            viewer.repaint();
-//        });
-//
-//        controlPanel.add(zoomInButton);
-//        controlPanel.add(zoomOutButton);
-//        controlPanel.add(resetButton);
-//
-//        // Create frame
-//        JFrame frame = new JFrame("Parse Tree Viewer");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//        // Add components
-//        frame.add(scrollPane, BorderLayout.CENTER);
-//        frame.add(controlPanel, BorderLayout.SOUTH);
-//
-//        // Set size and display
-//        frame.setSize(1000, 640);
-//        frame.setVisible(true);
-//    }
-//
-//
-//    private static void debugTokenStream(CommonTokenStream tokens, Lexer lexer) {
-//        tokens.fill(); // Ensure all tokens are generated
-//        List<Token> allTokens = tokens.getTokens();
-//
-//        System.out.println("\n--- LEXER TOKEN DEBUG OUTPUT ---");
-//        for (Token t : allTokens) {
-//            // Only show tokens on the default channel (skipping WS and Comments)
-//            if (t.getChannel() == Token.DEFAULT_CHANNEL) {
-//                String tokenName = PythonLexer.VOCABULARY.getSymbolicName(t.getType());
-//                String tokenText = t.getText().replace("\n", "\\n").replace("\r", "\\r");
-//
-//                // Use the type number if the name is null (for virtual tokens like INDENT/DEDENT)
-//                if (tokenName == null) {
-//                    tokenName = "VirtualType(" + t.getType() + ")";
-//                }
-//
-//                System.out.printf("Line %d | %-20s | Text: '%s'\n",
-//                        t.getLine(),
-//                        tokenName,
-//                        tokenText);
-//            }
-//        }
-//        System.out.println("--------------------------------\n");
-//    }
-//
-//
-//}
+
 package app;
 
 
@@ -254,17 +21,21 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.stream.Stream;
+
 import visitor.python.AtomExpressionVisitor;
 public class App {
 
+    private enum InteractivityMode { LOCAL_STORAGE, SERVER_REGENERATION }
+    private static final InteractivityMode MODE = InteractivityMode.SERVER_REGENERATION;
+
+    // ✅ يتحدد تلقائيًا حسب الـ MODE، لا تعدّله يدويًا
+    private static final String BASE_DIR =
+            (MODE == InteractivityMode.LOCAL_STORAGE) ? "samples/Testing7" : "samples/Testing8";
     private static JTabbedPane tabbedPane = new JTabbedPane();
     private static JFrame mainFrame = null;
     private static java.util.List<String> semanticErrors = new java.util.ArrayList<>();
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // ✅ اعترض System.err لتخزين الأخطاء الدلالية
         java.io.PrintStream originalErr = System.err;
         java.io.ByteArrayOutputStream errBuffer = new java.io.ByteArrayOutputStream();
@@ -281,7 +52,7 @@ public class App {
         try {
             SwingUtilities.invokeAndWait(() -> {
                 mainFrame = new JFrame("AST Viewer");
-                mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 mainFrame.setSize(1000, 700);
                 mainFrame.setLocationRelativeTo(null);
                 tabbedPane.setBackground(new Color(45, 45, 48));
@@ -304,15 +75,29 @@ public class App {
             System.err.println("Error clearing log: " + e.getMessage());
         }
 
-        processFile("samples/Testing7/app.py");
-        processFile("samples/Testing7/templates/index.jinja");
-        processFile("samples/Testing7/templates/add_product.jinja");
-        processFile("samples/Testing7/templates/edit_product.jinja");
-        processFile("samples/Testing7/templates/detail.jinja");
-// ✅ انسخ style.css إلى output/
-        // ✅ انسخ style.css إلى output/static/
+        processFile(BASE_DIR + "/app.py");
+        processFile(BASE_DIR + "/templates/index.jinja");
+        processFile(BASE_DIR + "/templates/add_product.jinja");
+        if (MODE == InteractivityMode.LOCAL_STORAGE) {
+            processFile(BASE_DIR + "/templates/edit_product.jinja");
+        }
+        processFile(BASE_DIR + "/templates/detail.jinja");
+//        processFile("samples/Semantic_errors/app.py");
+//        processFile("samples/Semantic_errors/test.j2");
+        // ✅ راقب ملف app.py وأعد التوليد عند التغيير
+        java.nio.file.WatchService watchService = null;
+
+        if (MODE == InteractivityMode.LOCAL_STORAGE) {
+            watchService = java.nio.file.FileSystems.getDefault().newWatchService();
+            java.nio.file.Path watchPath = java.nio.file.Paths.get(BASE_DIR);
+            watchPath.register(watchService, java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY);
+            System.out.println("👀 Watching for changes in " + BASE_DIR + "...");
+        }
+        if (MODE == InteractivityMode.SERVER_REGENERATION) {
+            startAddProductServer();
+        }
         try {
-            java.nio.file.Path cssSource = java.nio.file.Paths.get("samples/Testing7/style.css");
+            java.nio.file.Path cssSource = java.nio.file.Paths.get(BASE_DIR + "/style.css");
             if (java.nio.file.Files.exists(cssSource)) {
                 java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output/static"));
                 java.nio.file.Files.copy(
@@ -321,6 +106,10 @@ public class App {
                         java.nio.file.StandardCopyOption.REPLACE_EXISTING
                 );
                 System.out.println("✅ Copied file: output/static/style.css");
+                java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output/templates"));
+                java.nio.file.Files.copy(cssSource, java.nio.file.Paths.get("output/templates/style.css"),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("✅ Copied file: output/templates/style.css");
             }
         } catch (Exception e) {
             System.err.println("Error copying style.css: " + e.getMessage());
@@ -346,6 +135,27 @@ public class App {
         } catch (Exception e) {
             System.err.println("Error writing semantic report: " + e.getMessage());
         }
+        if (MODE == InteractivityMode.LOCAL_STORAGE) {
+            while (true) {
+                java.nio.file.WatchKey key = watchService.take();
+                for (java.nio.file.WatchEvent<?> event : key.pollEvents()) {
+                    System.out.println("🔄 Change detected! Regenerating...");
+                    processFile(BASE_DIR + "/app.py");
+                    processFile(BASE_DIR + "/templates/index.jinja");
+                    processFile(BASE_DIR + "/templates/add_product.jinja");
+                    processFile(BASE_DIR + "/templates/edit_product.jinja");
+                    processFile(BASE_DIR + "/templates/detail.jinja");
+                    System.out.println("✅ Regeneration complete!");
+                }
+                key.reset();
+            }
+        } else {
+            // ✅ وضع السيرفر: البرنامج يبقى شغالًا بانتظار طلبات HTTP فقط
+            System.out.println("Server mode active. Press Ctrl+C to stop.");
+            Thread.currentThread().join(); // يبقي البرنامج شغالًا للأبد بدون busy-loop
+        }
+
+
     }
 
 private static void processFile(String fileName) {
@@ -366,12 +176,18 @@ private static void processFile(String fileName) {
             System.out.println("\n--- Generated Python Code ---");
             if (program != null) {
                 String generatedCode = program.generateCode();
-                generatedCode = generatedCode.replace(
+
+                // ✅ الحقن يتم فقط لو المتغيرات فعليًا موجودة في هذا الملف بالتحديد
+                symbolTable.SymbolTable currentPyScope = symbolTable.SymbolTableManager.INSTANCE.getPythonTable();
+                boolean hasProduct1 = currentPyScope != null && currentPyScope.lookup("product1_name") != null;
+                boolean hasProduct2 = currentPyScope != null && currentPyScope.lookup("product2_name") != null;
+                if(hasProduct1 && hasProduct2){
+                    generatedCode = generatedCode.replace(
                         "@app.route('/')",
                         "products.append({'name': product1_name, 'price': product1_price})\n" +
                                 "products.append({'name': product2_name, 'price': product2_price})\n\n" +
                                 "@app.route('/')"
-                );
+                );}
                 System.out.println(generatedCode);
 
                 // ✅ اكتب الكود في ملف حقيقي
@@ -407,6 +223,7 @@ private static void processFile(String fileName) {
             }
 
         } else if (fileName.endsWith(".html") || fileName.endsWith(".j2") || fileName.endsWith(".jinja")) {
+            System.out.println("DEBUG: Starting Jinja processing for: " + fileName);
             System.out.println("\n--- [Jinja/HTML Analysis] Processing: " + fileName + " ---");
 
             HtmlLexer lexer = new HtmlLexer(CharStreams.fromFileName(fileName));
@@ -431,10 +248,95 @@ private static void processFile(String fileName) {
                             entry.getValue()
                     );
                 }
+// ✅ حوّل الروابط من Flask إلى HTML ثابت
+                generatedHtml = generatedHtml
+                        .replace("href=\"/\"", "href=\"index.html\"")
+                        .replace("href=\"/add\"", "href=\"add_product.html\"")
+                        .replace("href=\"/detail\"", "href=\"detail.html\"")
+                        .replace("href=\"/delete\"", "href=\"delete.html\"")
+                        .replace("href=\"/edit\"", "href=\"edit_product.html\"");
 
                 System.out.println("\n--- Generated HTML Code ---");
                 System.out.println(generatedHtml);
+// ✅ حقن JavaScript الخاص بـ localStorage حسب اسم الملف الناتج
+                String outputFileNameForScript = java.nio.file.Paths.get(fileName)
+                        .getFileName().toString()
+                        .replace(".jinja", ".html")
+                        .replace(".j2", ".html");
 
+                if(MODE == InteractivityMode.LOCAL_STORAGE){
+                    if (outputFileNameForScript.equals("index.html")) {
+                        String p1n = AtomExpressionVisitor.renderContext.getOrDefault("product1_name", "");
+                        String p1p = AtomExpressionVisitor.renderContext.getOrDefault("product1_price", "0");
+                        String p2n = AtomExpressionVisitor.renderContext.getOrDefault("product2_name", "");
+                        String p2p = AtomExpressionVisitor.renderContext.getOrDefault("product2_price", "0");
+
+                        generatedHtml += "\n<script>\n" +
+                                "const defaultProducts = [" +
+                                "{name:\"" + p1n + "\",price:" + p1p + "}," +
+                                "{name:\"" + p2n + "\",price:" + p2p + "}];\n" +
+                                "let products = JSON.parse(localStorage.getItem('products'));\n" +
+                                "if (!products) { products = defaultProducts; localStorage.setItem('products', JSON.stringify(products)); }\n" +
+                                "const c = document.getElementById('productList');\n" +
+                                "products.forEach((p,i)=>{ c.innerHTML += " +
+                                "'<div class=\"product-card\">' +" +
+                                "'<h3>'+p.name+'</h3>' +" +
+                                "'<p class=\"price\">$'+p.price+'</p>' +" +
+                                "'<div class=\"card-actions\">' +" +
+                                "'<a href=\"detail.html?id='+i+'\">View</a>' +" +
+                                "'<a class=\"delete-link\" href=\"#\" onclick=\"del('+i+')\">Delete</a>' +" +
+                                "'</div></div>'; });\n" +
+                                "function del(i){ products.splice(i,1); localStorage.setItem('products',JSON.stringify(products)); location.reload(); }\n" +
+                                "</script>";
+                    }
+
+                if (outputFileNameForScript.equals("add_product.html")) {
+                    generatedHtml += "\n<script>\n" +
+                            "function addProduct(){\n" +
+                            "  const name=document.getElementById('name').value;\n" +
+                            "  const price=document.getElementById('price').value;\n" +
+                            "  let products=JSON.parse(localStorage.getItem('products'))||[];\n" +
+                            "  products.push({name:name,price:price});\n" +
+                            "  localStorage.setItem('products',JSON.stringify(products));\n" +
+                            "  window.location.href='index.html';\n" +
+                            "}\n" +
+                            "</script>";
+                }
+
+                if (outputFileNameForScript.equals("detail.html")) {
+                    generatedHtml += "\n<script>\n" +
+                            "const params=new URLSearchParams(window.location.search);\n" +
+                            "const id=params.get('id');\n" +
+                            "const products=JSON.parse(localStorage.getItem('products'))||[];\n" +
+                            "const p=products[id];\n" +
+                            "if(p){ document.getElementById('productDetail').innerHTML=" +
+                            "'<p>Name: '+p.name+'</p><p>Price: '+p.price+'</p>'; }\n" +
+                            "</script>";
+                }
+
+                }
+                if (MODE == InteractivityMode.SERVER_REGENERATION
+                        && outputFileNameForScript.equals("index.html")) {
+                    generatedHtml += "\n<script>\n" +
+                            "function deleteProduct(i){\n" +
+                            "  fetch('http://localhost:8080/delete?index='+i)\n" +
+                            "    .then(()=>{ window.location.href='index.html'; })\n" +
+                            "    .catch(()=>{ alert('تأكد أن الجافا شغالة'); });\n" +
+                            "}\n" +
+                            "</script>";
+                }
+                if (MODE == InteractivityMode.SERVER_REGENERATION
+                        && outputFileNameForScript.equals("add_product.html")) {
+                    generatedHtml += "\n<script>\n" +
+                            "function addProduct(){\n" +
+                            "  const name=document.getElementById('name').value;\n" +
+                            "  const price=document.getElementById('price').value;\n" +
+                            "  fetch('http://localhost:8080/add?name='+encodeURIComponent(name)+'&price='+price)\n" +
+                            "    .then(()=>{ window.location.href='index.html'; })\n" +
+                            "    .catch(()=>{ alert('تأكد أن الجافا شغالة'); });\n" +
+                            "}\n" +
+                            "</script>";
+                }
                 try {
                     // ✅ استخرج اسم الملف وحوّله من .jinja إلى .html
                     String outputFileName = java.nio.file.Paths.get(fileName)
@@ -448,6 +350,43 @@ private static void processFile(String fileName) {
                             generatedHtml
                     );
                     System.out.println("✅ Generated file: output/" + outputFileName);
+
+                    // ✅ الكتلة الجديدة — توليد detail_N.html لكل منتج
+                    if (MODE == InteractivityMode.SERVER_REGENERATION && outputFileName.equals("index.html")) {
+                        symbolTable.SymbolEntry productsEntry = symbolTable.SymbolTableManager.INSTANCE
+                                .getPythonTable().lookup("products");
+                        Object nodeObj = productsEntry != null ? productsEntry.getAttribute("Node") : null;
+                        if (nodeObj instanceof ast.complexExp.ListLiteral) {
+                            ast.complexExp.ListLiteral listLiteral = (ast.complexExp.ListLiteral) nodeObj;
+                            int idx = 0;
+                            for (ast.ASTNode item : listLiteral.getListItems()) {
+                                if (item instanceof ast.complexExp.DictionaryLiteral) {
+                                    ast.complexExp.DictionaryLiteral dict = (ast.complexExp.DictionaryLiteral) item;
+                                    String pName = "", pPrice = "";
+                                    for (ast.keyValue.KeyValue kv : dict.getKeyValues()) {
+                                        String key = kv.getKey().getValue().toString().replaceAll("^\"|\"$", "");
+                                        String val = kv.getValueCode().replaceAll("^\"|\"$", "");
+                                        if (key.equals("name")) pName = val;
+                                        if (key.equals("price")) pPrice = val;
+                                    }
+                                    String detailHtml =
+                                            "<link rel=\"stylesheet\" href=\"style.css\">\n" +
+                                                    "<h2>Product Details</h2>\n" +
+                                                    "<div id=\"productDetail\"><p>Name: " + pName + "</p><p>Price: " + pPrice + "</p></div>\n" +
+                                                    "<a href=\"index.html\">Back</a>";
+                                    try {
+                                        java.nio.file.Files.writeString(
+                                                java.nio.file.Paths.get("output/templates/detail_" + idx + ".html"), detailHtml);
+                                        System.out.println("✅ Generated file: output/detail_" + idx + ".html");
+                                    } catch (Exception e) {
+                                        System.err.println("Error writing detail_" + idx + ".html: " + e.getMessage());
+                                    }
+                                    idx++;
+                                }
+                            }
+                        }
+                    }
+
                     // ✅ سجّل في generation_log.txt
                     try {
                         java.nio.file.Files.createDirectories(
@@ -517,6 +456,7 @@ private static void processFile(String fileName) {
                 (e.getMessage() != null ? e.getMessage() : "Unknown Error"));
         e.printStackTrace(System.out);
     }
+
 }
 
 
@@ -712,5 +652,175 @@ private static void showASTWindow(String astText, String tabTitle) {
             }
         }
         System.out.println("--------------------------------\n");
+    }
+    private static void startAddProductServer() {
+        try {
+            com.sun.net.httpserver.HttpServer server =
+                    com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress(8080), 0);
+
+            // ===== Endpoint الأول: /add (موجود من قبل) =====
+            server.createContext("/add", exchange -> {
+                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+
+                String query = exchange.getRequestURI().getQuery();
+                String name = "";
+                String price = "0";
+                if (query != null) {
+                    for (String pair : query.split("&")) {
+                        String[] kv = pair.split("=", 2);
+                        if (kv.length == 2) {
+                            String key = kv[0];
+                            String value = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                            if (key.equals("name")) name = value;
+                            if (key.equals("price")) price = value;
+                        }
+                    }
+                }
+
+                boolean success = addProductToSource(name, price);
+
+                if (success) {
+                    System.out.println("🔄 Product added via UI, regenerating...");
+                    processFile(BASE_DIR + "/app.py");
+                    processFile(BASE_DIR + "/templates/index.jinja");
+                    processFile(BASE_DIR + "/templates/add_product.jinja");
+                    processFile(BASE_DIR + "/templates/detail.jinja");
+                    System.out.println("✅ Regeneration complete!");
+                }
+
+                String response = success ? "OK" : "FAILED";
+                exchange.sendResponseHeaders(200, response.length());
+                try (java.io.OutputStream os = exchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+            });
+
+            // ===== Endpoint الثاني: /delete (الجديد) =====
+            server.createContext("/delete", exchange -> {
+                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+
+                String query = exchange.getRequestURI().getQuery(); // index=N
+                int index = -1;
+                if (query != null) {
+                    for (String pair : query.split("&")) {
+                        String[] kv = pair.split("=", 2);
+                        if (kv.length == 2 && kv[0].equals("index")) {
+                            try { index = Integer.parseInt(kv[1]); } catch (Exception ignored) {}
+                        }
+                    }
+                }
+
+                boolean success = (index >= 0) && deleteProductFromSource(index);
+
+                if (success) {
+                    System.out.println("🔄 Product deleted via UI, regenerating...");
+                    processFile(BASE_DIR + "/app.py");
+                    processFile(BASE_DIR + "/templates/index.jinja");
+                    processFile(BASE_DIR + "/templates/add_product.jinja");
+                    processFile(BASE_DIR + "/templates/detail.jinja");
+                    System.out.println("✅ Regeneration complete!");
+                }
+
+                String response = success ? "OK" : "FAILED";
+                exchange.sendResponseHeaders(200, response.length());
+                try (java.io.OutputStream os = exchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+            });
+
+            server.setExecutor(null);
+            server.start();
+            System.out.println("🌐 Add-product server running at http://localhost:8080");
+
+        } catch (Exception e) {
+            System.err.println("Error starting server: " + e.getMessage());
+        }
+    }
+
+    private static boolean addProductToSource(String name, String price) {
+        try {
+            java.nio.file.Path appPyPath = java.nio.file.Paths.get(BASE_DIR + "/app.py");
+            String content = java.nio.file.Files.readString(appPyPath);
+
+            // نبحث عن سطر products = [ ... ] وندخل العنصر الجديد قبل القوس الأخير ]
+            java.util.regex.Pattern pattern =
+                    java.util.regex.Pattern.compile("products\\s*=\\s*\\[(.*?)]", java.util.regex.Pattern.DOTALL);
+            java.util.regex.Matcher matcher = pattern.matcher(content);
+
+            if (!matcher.find()) {
+                System.err.println("Error: 'products = [...]' not found in app.py");
+                return false;
+            }
+
+            String existingItems = matcher.group(1).trim();
+            String newItem = "{\"name\": \"" + name + "\", \"price\": " + price + "}";
+
+            String updatedItems = existingItems.isEmpty()
+                    ? newItem
+                    : existingItems + ", " + newItem;
+
+            String updatedLine = "products = [" + updatedItems + "]";
+            String newContent = matcher.replaceFirst(java.util.regex.Matcher.quoteReplacement(updatedLine));
+
+            java.nio.file.Files.writeString(appPyPath, newContent);
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("Error updating app.py: " + e.getMessage());
+            return false;
+        }
+    }
+    private static boolean deleteProductFromSource(int indexToDelete) {
+        try {
+            java.nio.file.Path appPyPath = java.nio.file.Paths.get(BASE_DIR + "/app.py");
+            String content = java.nio.file.Files.readString(appPyPath);
+
+            java.util.regex.Pattern pattern =
+                    java.util.regex.Pattern.compile("products\\s*=\\s*\\[(.*?)]", java.util.regex.Pattern.DOTALL);
+            java.util.regex.Matcher matcher = pattern.matcher(content);
+
+            if (!matcher.find()) {
+                System.err.println("Error: 'products = [...]' not found in app.py");
+                return false;
+            }
+
+            String itemsStr = matcher.group(1).trim();
+
+            // ✅ تقسيم العناصر بحساب تداخل الأقواس المعقوفة { }
+            java.util.List<String> items = new java.util.ArrayList<>();
+            int depth = 0;
+            StringBuilder current = new StringBuilder();
+            for (char c : itemsStr.toCharArray()) {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
+                if (c == ',' && depth == 0) {
+                    items.add(current.toString().trim());
+                    current.setLength(0);
+                } else {
+                    current.append(c);
+                }
+            }
+            if (current.toString().trim().length() > 0) {
+                items.add(current.toString().trim());
+            }
+
+            if (indexToDelete < 0 || indexToDelete >= items.size()) {
+                System.err.println("Error: index out of range: " + indexToDelete);
+                return false;
+            }
+
+            items.remove(indexToDelete);
+
+            String updatedItems = String.join(", ", items);
+            String updatedLine = "products = [" + updatedItems + "]";
+            String newContent = matcher.replaceFirst(java.util.regex.Matcher.quoteReplacement(updatedLine));
+
+            java.nio.file.Files.writeString(appPyPath, newContent);
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("Error deleting product: " + e.getMessage());
+            return false;
+        }
     }
 }

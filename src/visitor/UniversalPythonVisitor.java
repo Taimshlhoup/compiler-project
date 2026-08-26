@@ -35,14 +35,31 @@ public class UniversalPythonVisitor extends PythonParserBaseVisitor<ASTNode> {
     @Override
     public ListItems visitListItems(PythonParser.ListItemsContext ctx) {
         ListItems listItems = new ListItems(ctx.getStart().getLine());
-        List<Atom> atomList = new ArrayList<>();
-        AtomVisitor atomVisitor = new AtomVisitor();
-        for (int i = 0; i < ctx.atom().size(); i++) {
-            Atom atom = atomVisitor.visit(ctx.atom(i));
-            atomList.add(atom);
-        }
-        listItems.setAtomList(atomList);
+        List<ast.ASTNode> items = new ArrayList<>();
 
+        for (PythonParser.List_itemContext itemCtx : ctx.list_item()) {
+            if (itemCtx instanceof PythonParser.AtomListItemContext) {
+                Atom atom = new AtomVisitor().visit(((PythonParser.AtomListItemContext) itemCtx).atom());
+                items.add(atom);
+            } else if (itemCtx instanceof PythonParser.DictListItemContext) {
+                PythonParser.DictListItemContext dictCtx = (PythonParser.DictListItemContext) itemCtx;
+                ast.complexExp.DictionaryLiteral dict = new ast.complexExp.DictionaryLiteral(dictCtx.getStart().getLine());
+                List<ast.keyValue.KeyValue> keyValueList = new ArrayList<>();
+
+                if (dictCtx.dict_maker() != null) {
+                    PythonParser.KeyValuePairsContext kvCtx =
+                            (PythonParser.KeyValuePairsContext) dictCtx.dict_maker();
+                    for (int i = 0; i < kvCtx.key_value().size(); i++) {
+                        ast.keyValue.KeyValue kv = new visitor.python.KeyValueVisitor().visit(kvCtx.key_value(i));
+                        keyValueList.add(kv);
+                    }
+                }
+                dict.setKeyValues(keyValueList);
+                items.add(dict);
+            }
+        }
+
+        listItems.setAtomList(items);
         return listItems;
     }
 

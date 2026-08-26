@@ -13,8 +13,10 @@ public abstract class KeyValue extends ASTNode {
     public void setKey(Atom key) {
         this.key = key;
     }
-
-
+    public Atom getKey() {
+        return key;
+    }
+    public abstract String getValueCode();
     @Override
     public String symbolTablePrint() {
         return key.toString() + " : ";

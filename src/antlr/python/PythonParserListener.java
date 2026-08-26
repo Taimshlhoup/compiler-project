@@ -1,4 +1,4 @@
-// Generated from C:/Users/Yousef Razzouk/IdeaProjects/compiler_project/grammars/PythonParser.g4 by ANTLR 4.13.2
+// Generated from C:/Users/VISION/IdeaProjects/compiler-project/grammars/PythonParser.g4 by ANTLR 4.13.2
 package antlr.python;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -811,6 +811,30 @@ public interface PythonParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitListItems(PythonParser.ListItemsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AtomListItem}
+	 * labeled alternative in {@link PythonParser#list_item}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtomListItem(PythonParser.AtomListItemContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AtomListItem}
+	 * labeled alternative in {@link PythonParser#list_item}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtomListItem(PythonParser.AtomListItemContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code DictListItem}
+	 * labeled alternative in {@link PythonParser#list_item}.
+	 * @param ctx the parse tree
+	 */
+	void enterDictListItem(PythonParser.DictListItemContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code DictListItem}
+	 * labeled alternative in {@link PythonParser#list_item}.
+	 * @param ctx the parse tree
+	 */
+	void exitDictListItem(PythonParser.DictListItemContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code KeyValuePairs}
 	 * labeled alternative in {@link PythonParser#dict_maker}.
