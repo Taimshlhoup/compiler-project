@@ -1,11 +1,8 @@
-product1_name = "Phone"
-product1_price = 300
-product2_name = "Laptop"
-product2_price = 800
+products = [{"name": "Phone", "price": 300}, {"name": "Laptop", "price": 800}]
 
 @app.route('/')
 def index():
-    return render_template('index.jinja', product1_name=product1_name, product1_price=product1_price, product2_name=product2_name, product2_price=product2_price)
+    return render_template('index.jinja', products=products)
 
 @app.route('/add')
 def add():
@@ -15,7 +12,7 @@ def add():
 
 @app.route('/detail')
 def detail():
-    return render_template('detail.jinja', product1_name=product1_name, product1_price=product1_price)
+    return render_template('detail.jinja')
 
 @app.route('/delete')
 def delete():

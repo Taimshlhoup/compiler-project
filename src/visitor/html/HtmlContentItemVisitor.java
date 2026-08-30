@@ -22,7 +22,7 @@ public class HtmlContentItemVisitor extends HtmlParserBaseVisitor<HtmlContentIte
 
     @Override
     public HtmlContentItem visitJinjaStmtItem(HtmlParser.JinjaStmtItemContext ctx) {
-        // تأكد من استخدام نفس الـ Visitor لفحص الـ Statements
+
         return new JinjaStatementVisitor().visit(ctx.jinjaStatementBlock());
     }
 

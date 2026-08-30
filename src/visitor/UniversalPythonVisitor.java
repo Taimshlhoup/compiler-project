@@ -112,7 +112,7 @@ public class UniversalPythonVisitor extends PythonParserBaseVisitor<ASTNode> {
     @Override
     public KeyValue visitKeyValuePairs(PythonParser.KeyValuePairsContext ctx) {
         KeyValueVisitor keyValueVisitor = new KeyValueVisitor();
-        // Dummy
+
         return keyValueVisitor.visit(ctx.key_value(0));
     }
 

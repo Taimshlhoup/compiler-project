@@ -20,12 +20,12 @@ public class HtmlElementVisitor extends HtmlParserBaseVisitor<HtmlElement> {
         if (ctx.tag_content() != null && ctx.tag_content().size() > 0) {
             String firstTag = ctx.tag_content(0).getText();
             if (firstTag.equals("/")) {
-                // وسم إغلاق
+
                 if (ctx.tag_content().size() > 1) {
                     tagElement.setTagName("/" + ctx.tag_content(1).getText());
                 }
             } else {
-                // وسم افتتاح
+
                 tagElement.setTagName(firstTag);
             }
         }

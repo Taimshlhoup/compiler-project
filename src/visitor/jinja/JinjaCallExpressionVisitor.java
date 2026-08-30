@@ -29,7 +29,7 @@ public Object visitJinjaAtomOnly(HtmlParser.JinjaAtomOnlyContext ctx) {
     public Object visitJinjaFunctionCall(HtmlParser.JinjaFunctionCallContext ctx) {
         String funcName = ctx.J_NAME().getText().trim();
 
-        // فحص وجود الدالة في جدول بايثون
+
         if (SymbolTableManager.INSTANCE.lookup(funcName, "python") == null) {
             System.err.println("Semantic Error: Undefined function '" + funcName +
                     "' at line " + ctx.getStart().getLine());
@@ -38,7 +38,7 @@ public Object visitJinjaAtomOnly(HtmlParser.JinjaAtomOnlyContext ctx) {
         jinjaFunctionCall.setFunctionName(funcName);
 
         if (ctx.j_argument_list() != null) {
-            // ملاحظة: إذا كان لديك JinjaArgumentVisitor منفصل، استدعه يدوياً هنا أيضاً
+
             Object args = visit(ctx.j_argument_list());
             if (args instanceof JinjaArgumentsList) {
                 jinjaFunctionCall.setArgumentsList((JinjaArgumentsList) args);

@@ -78,25 +78,21 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
         }
         return simpleExpr;
     }
-    /**
-     * ميثود مساعدة وموحدة لفحص أنواع الجينجا وفصل أخطاء الـ Type Error عن الـ Mismatch
-     */
+
     private void validateTypes(String leftType, String rightType, String operator, int line) {
-        // إذا كان المتغير غير معرف أصلاً، نتخطى الفحص لأن ميثود SimpleExpr ستصطاد خطأ الـ Undefined
+
         if (leftType == null || rightType == null) return;
 
-        // --- القاعدة الأولى: Type Mismatch ---
-        // أي عملية أو مقارنة بين نوعين مختلفين فوراً تعطي عدم تطابق
+
         if (!leftType.equals(rightType)) {
             System.err.println("Semantic Error: Type mismatch at line " + line +
                     " -> Cannot compare '" + leftType + "' with '" + rightType + "' using operator '" + operator + "'.");
             return;
         }
 
-        // --- القاعدة الثانية: Type Error ---
-        // الأنواع متطابقة تماماً ولكن العملية بحد ذاتها ممنوعة هندسياً في الجينجا
+
         if (leftType.equals("Boolean")) {
-            // يمنع استخدام عوامل المقارنة الحجمية أو العمليات الحسابية على البوليان
+
             if (operator.equals(">") || operator.equals("<") || operator.equals(">=") || operator.equals("<=") ||
                     operator.equals("+") || operator.equals("-") || operator.equals("*") || operator.equals("/")) {
                 System.err.println("Semantic Error: Type error at line " + line +
@@ -106,7 +102,7 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
         }
 
         if (leftType.equals("String")) {
-            // يمنع الطرح والقسمة والضرب وعوامل المقارنة الحجمية للنصوص في الجينجا
+
             if (operator.equals("-") || operator.equals("*") || operator.equals("/") ||
                     operator.equals(">") || operator.equals("<") || operator.equals(">=") || operator.equals("<=")) {
                 System.err.println("Semantic Error: Type error at line " + line +
@@ -117,7 +113,7 @@ public Object visitJinjaSimpleExpr(HtmlParser.JinjaSimpleExprContext ctx) {
     }
 
 private void checkVariable(String varName, int line) {
-    // تخطى literals
+
     if (varName.matches("[0-9]+.*") || varName.startsWith("\"") ||
             varName.startsWith("'") || varName.equalsIgnoreCase("true") ||
             varName.equalsIgnoreCase("false") || varName.equalsIgnoreCase("none")) {
@@ -128,14 +124,14 @@ private void checkVariable(String varName, int line) {
     symbolTable.SymbolTable pythonTable = AtomExpressionVisitor.pythonScopeAtRender;
 
     if (jinjaTable != null && jinjaTable.lookup(varName) != null) {
-        //  معرّف بـ set أو ممرر عبر render_template
+
     } else if (pythonTable != null && pythonTable.lookup(varName) != null) {
-        //  موجود في Python لكن ما انمرر
+
         System.err.println("Semantic Error: Missing flask variable '" + varName +
                 "' at line " + line +
                 " -> variable is defined in Python but not passed to render_template()");
     } else {
-        //  غير موجود في أي مكان
+
         System.err.println("Semantic Error: Undefined variable '" + varName +
                 "' in Jinja template at line " + line);
     }
@@ -158,7 +154,7 @@ private void checkVariable(String varName, int line) {
         checkVariable(left, line);
         checkVariable(right, line);
 
-        // فحص الأنواع
+
         SymbolEntry leftEntry  = SymbolTableManager.INSTANCE.lookup(left,  "jinja");
         SymbolEntry rightEntry = SymbolTableManager.INSTANCE.lookup(right, "jinja");
         String leftType  = (leftEntry  != null) ? (String) leftEntry.getAttribute("Type") : inferLiteralType(left);
@@ -229,7 +225,7 @@ public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
     public Object visitJinjaDivision(HtmlParser.JinjaDivisionContext ctx) {
         String rightVar = ctx.j_call_expr(1).getText().trim();
 
-        // ✅ Division by Zero check
+
         if (rightVar.equals("0")) {
             System.err.println("Semantic Error: Division by zero at line " +
                     ctx.getStart().getLine());
@@ -250,10 +246,10 @@ public Object visitJinjaBinaryExpr(HtmlParser.JinjaBinaryExprContext ctx) {
     }
     @Override
     public Object visitJinjaExprBlock(HtmlParser.JinjaExprBlockContext ctx) {
-        // زيارة الـ j_expression داخل {{ }}
+
         Object result = visit(ctx.j_expression());
 
-        // إذا كانت JinjaSimpleExpression نضيف {{ }} عند عرضها
+
         if (result instanceof ast.jinja.jinjaExpression.JinjaSimpleExpression) {
             return result;
         }

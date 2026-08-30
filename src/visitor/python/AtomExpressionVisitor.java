@@ -91,7 +91,7 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
         System.err.println("Semantic Error: Undefined function '" + funcName +
                 "' at line " + ctx.getStart().getLine());
     }
-    // ✅ افحص render_template قبل زيارة الـ arglist
+
     if ("render_template".equals(funcName) && ctx.arglist() != null) {
         symbolTable.SymbolTable currentScope =
                 SymbolTableManager.INSTANCE.getPythonTable();
@@ -110,7 +110,7 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
                         && !valueVar.equalsIgnoreCase("false")
                         && !valueVar.equalsIgnoreCase("none")) {
 
-                    // ✅ الفحص قبل ما يُسجَّل
+
                     if (currentScope != null &&
                             currentScope.lookup(valueVar) == null) {
                         System.err.println("Semantic Error: Undefined variable '" +
@@ -122,7 +122,7 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
         }
     }
 
-    // بعدين زيارة الـ arglist
+
     ArgumentsList argumentsList = null;
     if (ctx.arglist() != null) {
         argumentsList = new ArgumentListVisitor().visit(ctx.arglist());
@@ -221,7 +221,7 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
                                 }
                             }
 
-                            // 3️⃣ إدخال المتغير وتحديد نوعه داخل السكوب الحالي للـ SymbolTable
+
                             try {
                                 symbolTable.SymbolTable currentScope = symbolTable.SymbolTableManager.INSTANCE.getPythonTable();
 
@@ -230,7 +230,7 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
                                     currentScope.setAttribute(pName, "Type", argType);
                                 }
                             } catch (Exception e) {
-                                // حماية لضمان استمرار مفسر الأكواد في حال حدوث أي استثناء فرعي
+
                             }
                         }
                     }
@@ -243,7 +243,7 @@ public AtomExpression visitFunctionCall(PythonParser.FunctionCallContext ctx) {
             }
             finally {
 
-                // لكن لا تقلق، لقد قمنا بحفظ نسخة منه فوق في pythonScopeAtRender بنجاح!
+
                 symbolTable.SymbolTableManager.INSTANCE.exitPythonLocalScope();
             }
         }

@@ -26,14 +26,14 @@ public class ArithmeticExpressionVisitor extends PythonParserBaseVisitor<Arithme
     @Override
     public ArithmeticExpression visitDivision(PythonParser.DivisionContext ctx) {
 
-        // ✅ Division by Zero check
+
         String rightText = ctx.python_expr(1).getText().trim();
 
         if (rightText.equals("0")) {
             System.err.println("Semantic Error: Division by zero at line " +
                     ctx.getStart().getLine());
         } else {
-            // Check if it's a variable with value 0
+
             symbolTable.SymbolEntry entry = symbolTable.SymbolTableManager.INSTANCE
                     .getPythonTable().lookup(rightText);
             if (entry != null) {
@@ -70,7 +70,7 @@ public class ArithmeticExpressionVisitor extends PythonParserBaseVisitor<Arithme
             PythonExpression currentRight = pythonExpressionVisitor.visit(pythonExprs.get(i));
             right.add(currentRight);
 
-            // --- فحص صحة العملية (Semantic Check) ---
+
             checkTypeValidity(resultType, currentRight.node_name, operator, line);
 
 
@@ -92,20 +92,20 @@ public class ArithmeticExpressionVisitor extends PythonParserBaseVisitor<Arithme
 
 
     private void checkTypeValidity(String leftT, String rightT, Operator op, int line) {
-        // 1. إذا كان أحد الطرفين فارغاً، أو معرّفاً كـ "Name"
+
         if (leftT == null || rightT == null || leftT.equals("Name") || rightT.equals("Name")) {
             return;
         }
 
-        // 🚀 القاعدة الذهبية للـ Dynamic: إذا كان أحد الأطراف Dynamic، نتخطى كل الفحوصات بسلام!
+
         if (leftT.equals("Dynamic") || rightT.equals("Dynamic")) {
             return;
         }
 
-        // --- القاعدة الأولى: Type Mismatch (مع استثناء الـ Integer والـ Float) ---
+
         if (!leftT.equals(rightT)) {
 
-            // التحقق إذا كانت العملية بين Integer و Float للترقية الرقمية
+
             boolean isNumericPromotion = (leftT.equals("Integer") && rightT.equals("Float")) ||
                     (leftT.equals("Float") && rightT.equals("Integer"));
 
@@ -116,7 +116,7 @@ public class ArithmeticExpressionVisitor extends PythonParserBaseVisitor<Arithme
             }
         }
 
-        // --- القاعدة الثانية: Type Error (حالات خاصة للأنواع الصريحة المعلومة) ---
+
         if (leftT.equals("String")) {
             if (op == Operator.Subtraction || op == Operator.Division || op == Operator.Multiplication) {
                 System.err.println("Semantic Error: Type error at line " + line +

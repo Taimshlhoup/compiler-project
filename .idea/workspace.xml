@@ -2,53 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="599c07c1-2c9b-4c71-995b-f1b08d818b74" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gen/HtmlLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/gen/HtmlLexer.interp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gen/HtmlLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/gen/HtmlLexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gen/HtmlLexer.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/gen/HtmlLexer.tokens" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grammars/HtmlLexer.g4" beforeDir="false" afterPath="$PROJECT_DIR$/grammars/HtmlLexer.g4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grammars/PythonParser.g4" beforeDir="false" afterPath="$PROJECT_DIR$/grammars/PythonParser.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/samples/Testing7/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing7/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing7/templates/add_product.jinja" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/templates/add_product.jinja" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing7/templates/detail.jinja" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/templates/detail.jinja" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing7/templates/edit_product.jinja" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/templates/edit_product.jinja" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing7/templates/index.jinja" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/templates/index.jinja" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlLexer.interp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlLexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlLexer.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlLexer.tokens" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParser.interp" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParser.interp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParser.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParser.tokens" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParserBaseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParserBaseListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParserBaseVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParserBaseVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/html/HtmlParserVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/html/HtmlParserVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonLexer.interp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonLexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonParser.interp" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonParser.interp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonParserBaseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonParserBaseListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonParserBaseVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonParserBaseVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/antlr/python/PythonParserVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/antlr/python/PythonParserVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/samples/Testing8/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing8/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/complexExp/DictionaryLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/complexExp/DictionaryLiteral.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/complexExp/ListItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/complexExp/ListItems.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/complexExp/ListLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/complexExp/ListLiteral.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/jinja/jinjaCallExpr/JinjaCallExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/jinja/jinjaCallExpr/JinjaCallExpression.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/jinja/jinjaExpression/JinjaSimpleExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/jinja/jinjaExpression/JinjaSimpleExpression.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/jinja/jinjaStatment/JinjaForStatement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/jinja/jinjaStatment/JinjaForStatement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/keyValue/AtomKeyValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/keyValue/AtomKeyValue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/keyValue/KeyValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/keyValue/KeyValue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/keyValue/SimpleKeyValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/keyValue/SimpleKeyValue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/symbolTable/SymbolTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/symbolTable/SymbolTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/listener/CustomErrorListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/listener/CustomErrorListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/symbolTable/SymbolTableManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/symbolTable/SymbolTableManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/visitor/UniversalPythonVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/UniversalPythonVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/html/HtmlContentItemVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/html/HtmlContentItemVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/html/HtmlContentVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/html/HtmlContentVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/html/HtmlElementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/html/HtmlElementVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaAtomVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaAtomVisitor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaCallExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaCallExpressionVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaExpressionVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaStatementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaStatementVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaVisitor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/visitor/python/ArithmeticExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/ArithmeticExpressionVisitor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/visitor/python/AssignmentStatementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/AssignmentStatementVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/PythonExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/PythonExpressionVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/python/AtomExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/AtomExpressionVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/python/AtomVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/AtomVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/python/CompoundStatementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/CompoundStatementVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/python/ConditionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/ConditionVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/visitor/python/ForLoopVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/ForLoopVisitor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +75,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;taimsh&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/VISION/IdeaProjects/compiler-project/samples/Testing8/templates&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,

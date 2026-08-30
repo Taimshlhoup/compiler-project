@@ -32,10 +32,10 @@ public class AssignmentStatementVisitor extends PythonParserBaseVisitor<Assignme
 
 
     private void validateAndInsert(String name, String newType, String value, int line) {
-        // تسجيل المتغير تاريخياً دائماً بمجرد رؤيته في أي مكان بالكود
+
         SymbolTableManager.INSTANCE.registerVariable(name);
 
-        // 🚨 حماية: إذا كنا في فرع غير محقق، نكتفي بالتسجيل التاريخي ونخرج فوراً دون تعديل السكوب النشط
+
         if (SymbolTableManager.INSTANCE.isDeclarationOnlyMode()) {
             return;
         }
@@ -59,7 +59,7 @@ public class AssignmentStatementVisitor extends PythonParserBaseVisitor<Assignme
     public AssignmentStatement visitArithmeticAssignStmt(PythonParser.ArithmeticAssignStmtContext ctx) {
         String varName = ctx.python_expr().getText().trim();
 
-        // 🚨 حماية الإدخال الأولي الفوري في حالة الـ declarationOnlyMode
+
         if (SymbolTableManager.INSTANCE.isDeclarationOnlyMode()) {
             SymbolTableManager.INSTANCE.registerVariable(varName);
         } else if (!sb.existsInCurrentScope(varName)) {
@@ -81,18 +81,18 @@ public class AssignmentStatementVisitor extends PythonParserBaseVisitor<Assignme
 
     @Override
     public AssignmentStatement visitPythonExpressionAssignStmt(PythonParser.PythonExpressionAssignStmtContext ctx) {
-        // 1. استخراج اسم المتغير نصياً (بدون زيارة الـ Visitor لمنع رسالة Undefined)
+
         String varName = ctx.python_expr(0).getText().trim();
 
-        // 2. زيارة الطرف الأيمن أولاً لجلب القيمة والنوع
+
         PythonExpression valueNode = pythonExpressionVisitor.visit(ctx.python_expr(1));
         String newType = valueNode.node_name;
         String valueStr = valueNode.symbolTablePrint();
 
-        // 3. استخدام الدالة الموحدة للإدخال أو فحص النوع (هنا سيتم الإدخال لأول مرة بصمت)
+
         validateAndInsert(varName, newType, valueStr, ctx.getStart().getLine());
         sb.setAttribute(varName, "Node", valueNode);
-        // 4. الآن يمكن زيارة الطرف الأيسر لبناء الـ AST فقط
+
         PythonExpression varNode = pythonExpressionVisitor.visit(ctx.python_expr(0));
 
         PythonExpressionAssignStatement stmt = new PythonExpressionAssignStatement(ctx.getStart().getLine());

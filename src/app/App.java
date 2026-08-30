@@ -27,16 +27,16 @@ import visitor.python.AtomExpressionVisitor;
 public class App {
 
     private enum InteractivityMode { LOCAL_STORAGE, SERVER_REGENERATION }
-    private static final InteractivityMode MODE = InteractivityMode.SERVER_REGENERATION;
+    private static final InteractivityMode MODE = InteractivityMode.LOCAL_STORAGE;
 
-    // ✅ يتحدد تلقائيًا حسب الـ MODE، لا تعدّله يدويًا
+
     private static final String BASE_DIR =
             (MODE == InteractivityMode.LOCAL_STORAGE) ? "samples/Testing7" : "samples/Testing8";
     private static JTabbedPane tabbedPane = new JTabbedPane();
     private static JFrame mainFrame = null;
     private static java.util.List<String> semanticErrors = new java.util.ArrayList<>();
     public static void main(String[] args) throws Exception {
-        // ✅ اعترض System.err لتخزين الأخطاء الدلالية
+
         java.io.PrintStream originalErr = System.err;
         java.io.ByteArrayOutputStream errBuffer = new java.io.ByteArrayOutputStream();
         System.setErr(new java.io.PrintStream(errBuffer) {
@@ -65,7 +65,7 @@ public class App {
             e.printStackTrace();
         }
 
-        // ✅ امسح الـ log القديم
+
         try {
             java.nio.file.Files.createDirectories(
                     java.nio.file.Paths.get("compiler_output"));
@@ -82,9 +82,7 @@ public class App {
             processFile(BASE_DIR + "/templates/edit_product.jinja");
         }
         processFile(BASE_DIR + "/templates/detail.jinja");
-//        processFile("samples/Semantic_errors/app.py");
-//        processFile("samples/Semantic_errors/test.j2");
-        // ✅ راقب ملف app.py وأعد التوليد عند التغيير
+
         java.nio.file.WatchService watchService = null;
 
         if (MODE == InteractivityMode.LOCAL_STORAGE) {
@@ -114,7 +112,7 @@ public class App {
         } catch (Exception e) {
             System.err.println("Error copying style.css: " + e.getMessage());
         }
-        // ✅ اكتب semantic_report.txt
+
         try {
             java.nio.file.Files.createDirectories(
                     java.nio.file.Paths.get("compiler_output"));
@@ -150,7 +148,7 @@ public class App {
                 key.reset();
             }
         } else {
-            // ✅ وضع السيرفر: البرنامج يبقى شغالًا بانتظار طلبات HTTP فقط
+
             System.out.println("Server mode active. Press Ctrl+C to stop.");
             Thread.currentThread().join(); // يبقي البرنامج شغالًا للأبد بدون busy-loop
         }
@@ -171,13 +169,13 @@ private static void processFile(String fileName) {
 
             ParseTree tree = parser.prog();
             ProgramVisitor visitor = new ProgramVisitor();
-            ast.Program program = (ast.Program) visitor.visit(tree);
+                ast.Program program = (ast.Program) visitor.visit(tree);
 
             System.out.println("\n--- Generated Python Code ---");
             if (program != null) {
                 String generatedCode = program.generateCode();
 
-                // ✅ الحقن يتم فقط لو المتغيرات فعليًا موجودة في هذا الملف بالتحديد
+
                 symbolTable.SymbolTable currentPyScope = symbolTable.SymbolTableManager.INSTANCE.getPythonTable();
                 boolean hasProduct1 = currentPyScope != null && currentPyScope.lookup("product1_name") != null;
                 boolean hasProduct2 = currentPyScope != null && currentPyScope.lookup("product2_name") != null;
@@ -206,7 +204,7 @@ private static void processFile(String fileName) {
             if (program != null) {
                 showASTWindow(program.toString(), " Python AST - " + fileName);
 
-                // ✅ اكتب ast_python.json
+
                 try {
                     java.nio.file.Files.createDirectories(
                             java.nio.file.Paths.get("compiler_output"));
@@ -236,11 +234,11 @@ private static void processFile(String fileName) {
             visitor.html.HtmlContentVisitor visitor = new visitor.html.HtmlContentVisitor();
             ast.HtmlContent htmlContent = (ast.HtmlContent) visitor.visit(tree);
 
-             // ✅ Generate HTML file
+
             if (htmlContent != null) {
                 String generatedHtml = htmlContent.generateCode();
 
-// ✅ استبدل المتغيرات بالقيم الحقيقية
+
                 for (java.util.Map.Entry<String, String> entry :
                         AtomExpressionVisitor.renderContext.entrySet()) {
                     generatedHtml = generatedHtml.replace(
@@ -248,7 +246,7 @@ private static void processFile(String fileName) {
                             entry.getValue()
                     );
                 }
-// ✅ حوّل الروابط من Flask إلى HTML ثابت
+
                 generatedHtml = generatedHtml
                         .replace("href=\"/\"", "href=\"index.html\"")
                         .replace("href=\"/add\"", "href=\"add_product.html\"")
@@ -258,7 +256,7 @@ private static void processFile(String fileName) {
 
                 System.out.println("\n--- Generated HTML Code ---");
                 System.out.println(generatedHtml);
-// ✅ حقن JavaScript الخاص بـ localStorage حسب اسم الملف الناتج
+
                 String outputFileNameForScript = java.nio.file.Paths.get(fileName)
                         .getFileName().toString()
                         .replace(".jinja", ".html")
@@ -266,15 +264,34 @@ private static void processFile(String fileName) {
 
                 if(MODE == InteractivityMode.LOCAL_STORAGE){
                     if (outputFileNameForScript.equals("index.html")) {
-                        String p1n = AtomExpressionVisitor.renderContext.getOrDefault("product1_name", "");
-                        String p1p = AtomExpressionVisitor.renderContext.getOrDefault("product1_price", "0");
-                        String p2n = AtomExpressionVisitor.renderContext.getOrDefault("product2_name", "");
-                        String p2p = AtomExpressionVisitor.renderContext.getOrDefault("product2_price", "0");
+                        StringBuilder defaultProductsJs = new StringBuilder("[");
+                        symbolTable.SymbolEntry productsEntry = symbolTable.SymbolTableManager.INSTANCE
+                                .getPythonTable().lookup("products");
+                        Object nodeObj = productsEntry != null ? productsEntry.getAttribute("Node") : null;
+
+                        if (nodeObj instanceof ast.complexExp.ListLiteral) {
+                            ast.complexExp.ListLiteral listLiteral = (ast.complexExp.ListLiteral) nodeObj;
+                            boolean first = true;
+                            for (ast.ASTNode item : listLiteral.getListItems()) {
+                                if (item instanceof ast.complexExp.DictionaryLiteral) {
+                                    ast.complexExp.DictionaryLiteral dict = (ast.complexExp.DictionaryLiteral) item;
+                                    String pName = "", pPrice = "0";
+                                    for (ast.keyValue.KeyValue kv : dict.getKeyValues()) {
+                                        String key = kv.getKey().getValue().toString().replaceAll("^\"|\"$", "");
+                                        String val = kv.getValueCode().replaceAll("^\"|\"$", "");
+                                        if (key.equals("name")) pName = val;
+                                        if (key.equals("price")) pPrice = val;
+                                    }
+                                    if (!first) defaultProductsJs.append(",");
+                                    defaultProductsJs.append("{name:\"").append(pName).append("\",price:").append(pPrice).append("}");
+                                    first = false;
+                                }
+                            }
+                        }
+                        defaultProductsJs.append("]");
 
                         generatedHtml += "\n<script>\n" +
-                                "const defaultProducts = [" +
-                                "{name:\"" + p1n + "\",price:" + p1p + "}," +
-                                "{name:\"" + p2n + "\",price:" + p2p + "}];\n" +
+                                "const defaultProducts = " + defaultProductsJs.toString() + ";\n" +
                                 "let products = JSON.parse(localStorage.getItem('products'));\n" +
                                 "if (!products) { products = defaultProducts; localStorage.setItem('products', JSON.stringify(products)); }\n" +
                                 "const c = document.getElementById('productList');\n" +
@@ -338,7 +355,7 @@ private static void processFile(String fileName) {
                             "</script>";
                 }
                 try {
-                    // ✅ استخرج اسم الملف وحوّله من .jinja إلى .html
+
                     String outputFileName = java.nio.file.Paths.get(fileName)
                             .getFileName().toString()
                             .replace(".jinja", ".html")
@@ -351,7 +368,7 @@ private static void processFile(String fileName) {
                     );
                     System.out.println("✅ Generated file: output/" + outputFileName);
 
-                    // ✅ الكتلة الجديدة — توليد detail_N.html لكل منتج
+
                     if (MODE == InteractivityMode.SERVER_REGENERATION && outputFileName.equals("index.html")) {
                         symbolTable.SymbolEntry productsEntry = symbolTable.SymbolTableManager.INSTANCE
                                 .getPythonTable().lookup("products");
@@ -387,7 +404,7 @@ private static void processFile(String fileName) {
                         }
                     }
 
-                    // ✅ سجّل في generation_log.txt
+
                     try {
                         java.nio.file.Files.createDirectories(
                                 java.nio.file.Paths.get("compiler_output"));
@@ -416,7 +433,7 @@ private static void processFile(String fileName) {
             if (htmlContent != null) {
                 showASTWindow(htmlContent.toString(), " Jinja/HTML AST - " + fileName);
 
-                // ✅ اكتب ast_jinja.json
+
                 try {
                     java.nio.file.Files.createDirectories(
                             java.nio.file.Paths.get("compiler_output"));
@@ -695,7 +712,7 @@ private static void showASTWindow(String astText, String tabTitle) {
                 }
             });
 
-            // ===== Endpoint الثاني: /delete (الجديد) =====
+
             server.createContext("/delete", exchange -> {
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 
@@ -742,7 +759,7 @@ private static void showASTWindow(String astText, String tabTitle) {
             java.nio.file.Path appPyPath = java.nio.file.Paths.get(BASE_DIR + "/app.py");
             String content = java.nio.file.Files.readString(appPyPath);
 
-            // نبحث عن سطر products = [ ... ] وندخل العنصر الجديد قبل القوس الأخير ]
+
             java.util.regex.Pattern pattern =
                     java.util.regex.Pattern.compile("products\\s*=\\s*\\[(.*?)]", java.util.regex.Pattern.DOTALL);
             java.util.regex.Matcher matcher = pattern.matcher(content);
@@ -786,7 +803,7 @@ private static void showASTWindow(String astText, String tabTitle) {
 
             String itemsStr = matcher.group(1).trim();
 
-            // ✅ تقسيم العناصر بحساب تداخل الأقواس المعقوفة { }
+
             java.util.List<String> items = new java.util.ArrayList<>();
             int depth = 0;
             StringBuilder current = new StringBuilder();
