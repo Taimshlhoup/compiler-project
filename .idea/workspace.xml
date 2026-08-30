@@ -3,27 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="599c07c1-2c9b-4c71-995b-f1b08d818b74" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing7/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing7/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/Testing8/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/samples/Testing8/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/listener/CustomErrorListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/listener/CustomErrorListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/symbolTable/SymbolTableManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/symbolTable/SymbolTableManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/UniversalPythonVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/UniversalPythonVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/html/HtmlContentItemVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/html/HtmlContentItemVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/html/HtmlContentVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/html/HtmlContentVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/html/HtmlElementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/html/HtmlElementVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaAtomVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaAtomVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaCallExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaCallExpressionVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaExpressionVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaStatementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaStatementVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/jinja/JinjaVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/jinja/JinjaVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/ArithmeticExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/ArithmeticExpressionVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/AssignmentStatementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/AssignmentStatementVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/AtomExpressionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/AtomExpressionVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/AtomVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/AtomVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/CompoundStatementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/CompoundStatementVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/ConditionVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/ConditionVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visitor/python/ForLoopVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/visitor/python/ForLoopVisitor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

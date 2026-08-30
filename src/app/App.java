@@ -89,7 +89,7 @@ public class App {
             watchService = java.nio.file.FileSystems.getDefault().newWatchService();
             java.nio.file.Path watchPath = java.nio.file.Paths.get(BASE_DIR);
             watchPath.register(watchService, java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY);
-            System.out.println("👀 Watching for changes in " + BASE_DIR + "...");
+
         }
         if (MODE == InteractivityMode.SERVER_REGENERATION) {
             startAddProductServer();
@@ -103,11 +103,11 @@ public class App {
                         java.nio.file.Paths.get("output/static/style.css"),
                         java.nio.file.StandardCopyOption.REPLACE_EXISTING
                 );
-                System.out.println("✅ Copied file: output/static/style.css");
+
                 java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output/templates"));
                 java.nio.file.Files.copy(cssSource, java.nio.file.Paths.get("output/templates/style.css"),
                         java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("✅ Copied file: output/templates/style.css");
+
             }
         } catch (Exception e) {
             System.err.println("Error copying style.css: " + e.getMessage());
@@ -129,7 +129,7 @@ public class App {
                     java.nio.file.Paths.get("compiler_output/semantic_report.txt"),
                     report.toString()
             );
-            System.out.println("✅ Generated file: compiler_output/semantic_report.txt");
+
         } catch (Exception e) {
             System.err.println("Error writing semantic report: " + e.getMessage());
         }
@@ -192,7 +192,7 @@ private static void processFile(String fileName) {
                 try {
                     java.nio.file.Files.createDirectories(java.nio.file.Paths.get("output"));
                     java.nio.file.Files.writeString(java.nio.file.Paths.get("output/app.py"), generatedCode);
-                    System.out.println("✅ Generated file: output/app.py");
+
                 } catch (Exception e) {
                     System.err.println("Error writing file: " + e.getMessage());
                 }
@@ -214,7 +214,7 @@ private static void processFile(String fileName) {
                                     program.toString().replace("\"", "'").replace("\n", "\\n") +
                                     "\"\n}"
                     );
-                    System.out.println("✅ Generated file: compiler_output/ast_python.json");
+
                 } catch (Exception e) {
                     System.err.println("Error writing AST: " + e.getMessage());
                 }
@@ -366,7 +366,7 @@ private static void processFile(String fileName) {
                             java.nio.file.Paths.get("output/templates/" + outputFileName),
                             generatedHtml
                     );
-                    System.out.println("✅ Generated file: output/" + outputFileName);
+
 
 
                     if (MODE == InteractivityMode.SERVER_REGENERATION && outputFileName.equals("index.html")) {
@@ -394,7 +394,7 @@ private static void processFile(String fileName) {
                                     try {
                                         java.nio.file.Files.writeString(
                                                 java.nio.file.Paths.get("output/templates/detail_" + idx + ".html"), detailHtml);
-                                        System.out.println("✅ Generated file: output/detail_" + idx + ".html");
+
                                     } catch (Exception e) {
                                         System.err.println("Error writing detail_" + idx + ".html: " + e.getMessage());
                                     }
@@ -445,7 +445,7 @@ private static void processFile(String fileName) {
                             java.nio.file.StandardOpenOption.CREATE,
                             java.nio.file.StandardOpenOption.APPEND
                     );
-                    System.out.println("✅ Generated file: compiler_output/ast_jinja.json");
+
                 } catch (Exception e) {
                     System.err.println("Error writing AST: " + e.getMessage());
                 }
